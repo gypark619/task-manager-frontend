@@ -1,0 +1,112 @@
+/* ===== 공통 ===== */
+.page {
+    padding: 20px;
+}
+
+.section {
+    margin-bottom: 20px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.button {
+    margin-right: 6px;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    background-color: #f8f8f8;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #eeeeee;
+}
+
+.button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.button-delete {
+    border: 1px solid #d9534f;
+    background-color: #fff5f5;
+    color: #d9534f;
+}
+
+.button-delete:hover {
+    background-color: #fdeaea;
+}
+
+.button-primary {
+    border: 1px solid #4a90e2;
+    background-color: #eef6ff;
+    color: #2c6db2;
+}
+
+.button-primary:hover {
+    background-color: #ddeeff;
+}
+
+/* ===== 메시지 ===== */
+.message-area {
+    min-height: 24px;
+    margin-bottom: 16px;
+}
+
+.message-error {
+    color: red;
+    margin: 0;
+}
+
+.message-success {
+    color: green;
+    margin: 0;
+}
+
+/* ===== UserForm ===== */
+.user-form {
+    border: 1px solid #ddd;
+    padding: 16px;
+}
+
+.user-form input {
+    display: block;
+    margin-bottom: 10px;
+    padding: 8px;
+    width: 240px;
+    box-sizing: border-box;
+}
+
+/* ===== UserTable ===== */
+.user-table-title {
+    margin-bottom: 12px;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+}
+
+.user-table th,
+.user-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.user-table thead tr {
+    background-color: #f2f2f2;
+}
+
+.user-table-row {
+    cursor: pointer;
+}
+
+.user-table-row:hover {
+    background-color: #f9f9f9;
+}
+
+.user-table-row.selected {
+    background-color: #e6f7ff;
+}
