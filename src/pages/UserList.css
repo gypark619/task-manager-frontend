@@ -1,19 +1,192 @@
-/* ===== 공통 ===== */
+/* ===== 페이지 전체 영역 ===== */
 .page {
-    padding: 20px;
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #fafafa;
+}
+
+.page-title {
+    margin-bottom: 20px;
 }
 
 .section {
     margin-bottom: 20px;
 }
 
+/* ===== 메시지 영역 ===== */
+.message-area {
+    min-height: 24px;
+    margin-bottom: 16px;
+}
+
+.message-error {
+    color: #d9534f;
+    margin: 0;
+}
+
+.message-success {
+    color: #2e7d32;
+    margin: 0;
+}
+
+/* ===== 박스 공통 영역 ===== */
+.search-box,
+.table-box,
+.detail-box {
+    border: 1px solid #dcdcdc;
+    padding: 20px;
+    background-color: #fff;
+}
+
+/* ===== 검색 영역 ===== */
+.search-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* ===== 폼 공통 ===== */
+.form-label {
+    width: 70px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.form-input {
+    height: 36px;
+    padding: 0 10px;
+    min-width: 220px;
+    box-sizing: border-box;
+    border: 1px solid #cfcfcf;
+    background-color: #fff;
+}
+
+/* ===== 상세 정보 영역 ===== */
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.detail-button-group {
+    display: flex;
+    gap: 8px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 40px;
+    row-gap: 16px;
+}
+
+.detail-field {
+    display: flex;
+    align-items: center;
+}
+
+.detail-field .form-input {
+    width: 100%;
+}
+
+.detail-field .form-label {
+    width: 80px;
+}
+
+/* ===== 테이블 영역 ===== */
+.user-table-title {
+    margin-bottom: 12px;
+}
+
+.table-container {
+    height: 300px;
+    overflow-y: auto;
+}
+
+.table-box {
+    border: 1px solid #dcdcdc;
+    padding: 16px;
+    background-color: #fff;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #dcdcdc;
+    table-layout: fixed;
+}
+
+.user-table th,
+.user-table td {
+    border: 1px solid #dcdcdc;
+    padding: 10px 8px;
+}
+
+.user-table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f3f3f3;
+    z-index: 1;
+}
+
+.user-table thead tr {
+    background-color: #f3f3f3;
+}
+
+.user-table th {
+    font-weight: 600;
+}
+
+.user-table-row {
+    cursor: pointer;
+}
+
+.user-table-row:hover {
+    background-color: #f9f9f9;
+}
+
+.user-table-row.selected {
+    background-color: #e6f7ff;
+}
+
 .text-center {
     text-align: center;
 }
 
+/* ===== 컬럼 폭 지정 ===== */
+.user-table th:nth-child(1),
+.user-table td:nth-child(1) {
+    width: 50px;   /* 체크박스 */
+}
+
+.user-table th:nth-child(2),
+.user-table td:nth-child(2) {
+    width: 60px;   /* ID */
+}
+
+.user-table th:nth-child(3),
+.user-table td:nth-child(3) {
+    width: 120px;  /* 사번 */
+}
+
+.user-table th:nth-child(4),
+.user-table td:nth-child(4) {
+    width: 160px;  /* 로그인ID */
+}
+
+.user-table th:nth-child(5),
+.user-table td:nth-child(5) {
+    width: auto;   /* 이름 (남는 공간) */
+}
+
+/* ===== 버튼 공통 ===== */
 .button {
-    margin-right: 6px;
-    padding: 6px 12px;
+    min-width: 72px;
+    height: 36px;
+    padding: 0 14px;
     border: 1px solid #ccc;
     background-color: #f8f8f8;
     cursor: pointer;
@@ -28,16 +201,7 @@
     opacity: 0.6;
 }
 
-.button-delete {
-    border: 1px solid #d9534f;
-    background-color: #fff5f5;
-    color: #d9534f;
-}
-
-.button-delete:hover {
-    background-color: #fdeaea;
-}
-
+/* ===== 주요 액션 버튼 ===== */
 .button-primary {
     border: 1px solid #4a90e2;
     background-color: #eef6ff;
@@ -48,65 +212,13 @@
     background-color: #ddeeff;
 }
 
-/* ===== 메시지 ===== */
-.message-area {
-    min-height: 24px;
-    margin-bottom: 16px;
+/* ===== 삭제 버튼 ===== */
+.button-delete {
+    border: 1px solid #d9534f;
+    background-color: #fff5f5;
+    color: #d9534f;
 }
 
-.message-error {
-    color: red;
-    margin: 0;
-}
-
-.message-success {
-    color: green;
-    margin: 0;
-}
-
-/* ===== UserForm ===== */
-.user-form {
-    border: 1px solid #ddd;
-    padding: 16px;
-}
-
-.user-form input {
-    display: block;
-    margin-bottom: 10px;
-    padding: 8px;
-    width: 240px;
-    box-sizing: border-box;
-}
-
-/* ===== UserTable ===== */
-.user-table-title {
-    margin-bottom: 12px;
-}
-
-.user-table {
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #ddd;
-}
-
-.user-table th,
-.user-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-}
-
-.user-table thead tr {
-    background-color: #f2f2f2;
-}
-
-.user-table-row {
-    cursor: pointer;
-}
-
-.user-table-row:hover {
-    background-color: #f9f9f9;
-}
-
-.user-table-row.selected {
-    background-color: #e6f7ff;
+.button-delete:hover {
+    background-color: #fdeaea;
 }

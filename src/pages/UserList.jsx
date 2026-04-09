@@ -1,112 +1,27 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios";
-import UserForm from "../components/UserForm";
+import UserSearch from "../components/UserSearch";
 import UserTable from "../components/UserTable";
+import UserDetailForm from "../components/UserDetailForm";
 import "./UserList.css";
 
 const UserList = () => {
     const [users, setUsers] = useState([]);
-    const [employeeNo, setEmployeeNo] = useState("");
-    const [loginId, setLoginId] = useState("");
-    const [password, setPassword] = useState("");
-    const [name, setName] = useState("");
-    const [success, setSuccess] = useState("");
-    const [error, setError] = useState("");
+
+    const [searchName, setSearchName] = useState("");
+    const [searchLoginId, setSearchLoginId] = useState("");
+
+    const [detailId, setDetailId] = useState("");
+    const [detailEmployeeNo, setDetailEmployeeNo] = useState("");
+    const [detailLoginId, setDetailLoginId] = useState("");
+    const [detailPassword, setDetailPassword] = useState("");
+    const [detailName, setDetailName] = useState("");
+
     const [selectedId, setSelectedId] = useState(null);
     const [checkedIds, setCheckedIds] = useState([]);
 
-    const fetchUsers = () => {
-        api.get("/users")
-            .then((res) => {
-                setUsers(res.data);
-            })
-            .catch(() => {
-                showError("사용자 목록 조회 실패");
-            });
-    };
-
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
-    // 폼 초기화
-    const resetForm = () => {
-        setSelectedId(null);
-        setEmployeeNo("");
-        setLoginId("");
-        setPassword("");
-        setName("");
-    };
-
-    const handleSubmit = () => {
-        if (!employeeNo || !loginId || !password || !name) {
-            setError("필수값 입력");
-            return;
-        }
-
-        const userData = {
-            employeeNo,
-            loginId,
-            password,
-            name
-        };
-
-        if (selectedId) {
-            // 수정
-            api.put(`/users/${selectedId}`, userData)
-                .then(() => {
-                    handleSaveSuccess("수정 완료");
-                })
-                .catch((err) => {
-                    console.error(err);
-                    showError("수정 중 오류 발생");
-                });
-        } else {
-            // 등록
-            api.post("/users", userData)
-                .then(() => {
-                    handleSaveSuccess("등록 완료");
-                })
-                .catch((err) => {
-                    console.error(err);
-                    showError("등록 중 오류 발생");
-                });
-        }
-    };
-
-    const handleSelect = (user) => {
-        setSelectedId(user.id);
-        setEmployeeNo(user.employeeNo || "");
-        setLoginId(user.loginId || "");
-        setPassword(user.password || "");
-        setName(user.name || "");
-        setError("");
-        setSuccess("");
-    };
-
-    // 체크박스 토글
-    const handleCheck = (id) => {
-        setCheckedIds((prev) =>
-            prev.includes(id)
-                ? prev.filter((checkedId) => checkedId !== id)
-                : [...prev, id]
-        );
-    };
-
-    // 전체 선택
-    const handleCheckAll = (e) => {
-        if (e.target.checked) {
-            setCheckedIds(users.map((user) => user.id));
-        } else {
-            setCheckedIds([]);
-        }
-    };
-
-    const handleCancel = () => {
-        resetForm();
-        setError("");
-        setSuccess("");
-    };
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
 
     const showError = (message) => {
         setError(message);
@@ -118,20 +33,141 @@ const UserList = () => {
         setError("");
     };
 
-    const handleSaveSuccess = (message) => {
-        showSuccess(message);
-        fetchUsers();
-        resetForm();
+    const resetDetailForm = () => {
+        setSelectedId(null);
+        setDetailId("");
+        setDetailEmployeeNo("");
+        setDetailLoginId("");
+        setDetailPassword("");
+        setDetailName("");
     };
 
-    const handleDeleteUnified = () => {
+    const fetchUsers = () => {
+        api.get("/users")
+            .then((res) => {
+                setUsers(res.data);
+            })
+            .catch((err) => {
+                console.error(err);
+                showError("사용자 목록 조회 실패");
+            });
+    };
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
+    const handleSearch = () => {
+        api.get("/users")
+            .then((res) => {
+                const filteredUsers = res.data.filter((user) => {
+                    const matchName =
+                        !searchName || (user.name || "").includes(searchName);
+
+                    const matchLoginId =
+                        !searchLoginId || (user.loginId || "").includes(searchLoginId);
+
+                    return matchName && matchLoginId;
+                });
+
+                setUsers(filteredUsers);
+                setCheckedIds([]);
+                resetDetailForm();
+                showSuccess("조회 완료");
+            })
+            .catch((err) => {
+                console.error(err);
+                showError("조회 중 오류 발생");
+            });
+    };
+
+    const handleReset = () => {
+        setSearchName("");
+        setSearchLoginId("");
+
+        setCheckedIds([]);
+        resetDetailForm();
+
+        fetchUsers();   // 전체 목록 다시 조회
+        showSuccess("초기화 완료");
+    };
+
+    const handleSelectRow = (user) => {
+        setSelectedId(user.id);
+        setDetailId(user.id || "");
+        setDetailEmployeeNo(user.employeeNo || "");
+        setDetailLoginId(user.loginId || "");
+        setDetailPassword(user.password || "");
+        setDetailName(user.name || "");
+        setError("");
+        setSuccess("");
+    };
+
+    const handleCheck = (id) => {
+        setCheckedIds((prev) =>
+            prev.includes(id)
+                ? prev.filter((checkedId) => checkedId !== id)
+                : [...prev, id]
+        );
+    };
+
+    const handleCheckAll = (e) => {
+        if (e.target.checked) {
+            setCheckedIds(users.map((user) => user.id));
+        } else {
+            setCheckedIds([]);
+        }
+    };
+
+    const handleAdd = () => {
+        setCheckedIds([]);
+        resetDetailForm();
+        showSuccess("신규 입력 상태입니다.");
+    };
+
+    const handleSave = () => {
+        if (!detailEmployeeNo || !detailLoginId || !detailPassword || !detailName) {
+            showError("사번, 로그인ID, 비밀번호, 이름은 필수입니다.");
+            return;
+        }
+
+        const userData = {
+            employeeNo: detailEmployeeNo,
+            loginId: detailLoginId,
+            password: detailPassword,
+            name: detailName
+        };
+
+        if (selectedId) {
+            api.put(`/users/${selectedId}`, userData)
+                .then(() => {
+                    showSuccess("수정 완료");
+                    fetchUsers();
+                })
+                .catch((err) => {
+                    console.error(err);
+                    showError("수정 중 오류 발생");
+                });
+        } else {
+            api.post("/users", userData)
+                .then(() => {
+                    showSuccess("등록 완료");
+                    fetchUsers();
+                    resetDetailForm();
+                })
+                .catch((err) => {
+                    console.error(err);
+                    showError("등록 중 오류 발생");
+                });
+        }
+    };
+
+    const handleDelete = () => {
         let targetIds = [];
 
         if (checkedIds.length > 0) {
-            // 체크박스 우선
             targetIds = [...checkedIds];
         } else if (selectedId) {
-            // 선택된 row
             targetIds = [selectedId];
         } else {
             showError("삭제할 사용자를 선택하세요.");
@@ -140,17 +176,14 @@ const UserList = () => {
 
         if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
-        Promise.all(
-            targetIds.map((id) => api.delete(`/users/${id}`))
-        )
+        Promise.all(targetIds.map((id) => api.delete(`/users/${id}`)))
             .then(() => {
                 showSuccess("삭제 완료");
-
                 setCheckedIds([]);
                 fetchUsers();
 
                 if (selectedId && targetIds.includes(selectedId)) {
-                    resetForm();
+                    resetDetailForm();
                 }
             })
             .catch((err) => {
@@ -161,35 +194,28 @@ const UserList = () => {
 
     return (
         <div className="page">
-            <h1>User List</h1>
+            <h1 className="page-title">사용자 관리</h1>
 
             <div className="section">
-                <UserForm
-                    employeeNo={employeeNo}
-                    setEmployeeNo={setEmployeeNo}
-                    loginId={loginId}
-                    setLoginId={setLoginId}
-                    password={password}
-                    setPassword={setPassword}
-                    name={name}
-                    setName={setName}
-                    selectedId={selectedId}
-                    handleSubmit={handleSubmit}
-                    handleCancel={handleCancel}
+                <UserSearch
+                    searchName={searchName}
+                    setSearchName={setSearchName}
+                    searchLoginId={searchLoginId}
+                    setSearchLoginId={setSearchLoginId}
+                    handleSearch={handleSearch}
+                    handleReset={handleReset}
                 />
             </div>
 
             <div className="section">
-                <button
-                    className="button button-delete"
-                    type="button"
-                    onClick={handleDeleteUnified}
-                    disabled={checkedIds.length === 0 && !selectedId}
-                >
-                    {checkedIds.length > 0
-                        ? `선택 삭제 (${checkedIds.length})`
-                        : "삭제"}
-                </button>
+                <UserTable
+                    users={users}
+                    checkedIds={checkedIds}
+                    selectedId={selectedId}
+                    handleCheck={handleCheck}
+                    handleCheckAll={handleCheckAll}
+                    handleSelect={handleSelectRow}
+                />
             </div>
 
             <div className="message-area">
@@ -198,17 +224,22 @@ const UserList = () => {
                 </p>
             </div>
 
-            <div>
-                <UserTable
-                    users={users}
-                    checkedIds={checkedIds}
-                    handleCheck={handleCheck}
-                    handleCheckAll={handleCheckAll}
-                    handleSelect={handleSelect}
-                    selectedId={selectedId}
+            <div className="section">
+                <UserDetailForm
+                    detailId={detailId}
+                    detailEmployeeNo={detailEmployeeNo}
+                    detailLoginId={detailLoginId}
+                    detailPassword={detailPassword}
+                    detailName={detailName}
+                    setDetailEmployeeNo={setDetailEmployeeNo}
+                    setDetailLoginId={setDetailLoginId}
+                    setDetailPassword={setDetailPassword}
+                    setDetailName={setDetailName}
+                    handleAdd={handleAdd}
+                    handleSave={handleSave}
+                    handleDelete={handleDelete}
                 />
             </div>
-
         </div>
     );
 };
