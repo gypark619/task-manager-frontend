@@ -1,4 +1,10 @@
 import React from "react";
+import {
+    TEAM_OPTIONS,
+    POSITION_OPTIONS,
+    STATUS_OPTIONS,
+    getOptionLabel
+} from "../constants/userOptions";
 
 const UserTable = ({
     users,
@@ -28,15 +34,18 @@ const UserTable = ({
                             </th>
                             <th className="text-center">ID</th>
                             <th>사번</th>
-                            <th>로그인ID</th>
                             <th>이름</th>
+                            <th>로그인ID</th>
+                            <th>부서</th>
+                            <th>직급</th>
+                            <th>상태</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         {users.length === 0 ? (
                             <tr>
-                                <td colSpan="5" className="text-center">
+                                <td colSpan="8" className="text-center">
                                     조회 결과가 없습니다.
                                 </td>
                             </tr>
@@ -59,8 +68,11 @@ const UserTable = ({
                                     </td>
                                     <td className="text-center">{user.id}</td>
                                     <td>{user.employeeNo}</td>
-                                    <td>{user.loginId}</td>
                                     <td>{user.name}</td>
+                                    <td>{user.loginId}</td>
+                                    <td>{getOptionLabel(TEAM_OPTIONS, user.teamId)}</td>
+                                    <td>{getOptionLabel(POSITION_OPTIONS, user.positionId)}</td>
+                                    <td>{getOptionLabel(STATUS_OPTIONS, user.status)}</td>
                                 </tr>
                             ))
                         )}

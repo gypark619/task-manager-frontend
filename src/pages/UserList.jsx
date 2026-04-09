@@ -8,20 +8,44 @@ import "./UserList.css";
 const UserList = () => {
     const [users, setUsers] = useState([]);
 
-    const [searchName, setSearchName] = useState("");
-    const [searchLoginId, setSearchLoginId] = useState("");
+    const [search, setSearch] = useState({
+        name: "",
+        loginId: ""
+    });
 
-    const [detailId, setDetailId] = useState("");
-    const [detailEmployeeNo, setDetailEmployeeNo] = useState("");
-    const [detailLoginId, setDetailLoginId] = useState("");
-    const [detailPassword, setDetailPassword] = useState("");
-    const [detailName, setDetailName] = useState("");
+    const [detail, setDetail] = useState({
+        userId: "",
+        employeeNo: "",
+        loginId: "",
+        password: "",
+        name: "",
+        email: "",
+        phone: "",
+        officePhone: "",
+        teamId: "",
+        positionId: "",
+        status: "ACTIVE"
+    });
 
     const [selectedId, setSelectedId] = useState(null);
     const [checkedIds, setCheckedIds] = useState([]);
 
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
+
+    const handleSearchChange = (field, value) => {
+        setSearch((prev) => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const handleDetailChange = (field, value) => {
+        setDetail((prev) => ({
+            ...prev,
+            [field]: value
+        }));
+    };
 
     const showError = (message) => {
         setError(message);
@@ -35,21 +59,30 @@ const UserList = () => {
 
     const resetDetailForm = () => {
         setSelectedId(null);
-        setDetailId("");
-        setDetailEmployeeNo("");
-        setDetailLoginId("");
-        setDetailPassword("");
-        setDetailName("");
+        setDetail({
+            userId: "",
+            employeeNo: "",
+            loginId: "",
+            password: "",
+            name: "",
+            email: "",
+            phone: "",
+            officePhone: "",
+            teamId: "",
+            positionId: "",
+            status: "ACTIVE"
+        });
     };
 
     const fetchUsers = () => {
-        api.get("/users")
+        return api.get("/users")
             .then((res) => {
                 setUsers(res.data);
             })
             .catch((err) => {
                 console.error(err);
                 showError("사용자 목록 조회 실패");
+                throw err;
             });
     };
 
@@ -62,10 +95,10 @@ const UserList = () => {
             .then((res) => {
                 const filteredUsers = res.data.filter((user) => {
                     const matchName =
-                        !searchName || (user.name || "").includes(searchName);
+                        !search.name || (user.name || "").includes(search.name);
 
                     const matchLoginId =
-                        !searchLoginId || (user.loginId || "").includes(searchLoginId);
+                        !search.loginId || (user.loginId || "").includes(search.loginId);
 
                     return matchName && matchLoginId;
                 });
@@ -82,23 +115,37 @@ const UserList = () => {
     };
 
     const handleReset = () => {
-        setSearchName("");
-        setSearchLoginId("");
+        setSearch({
+            name: "",
+            loginId: ""
+        });
 
         setCheckedIds([]);
         resetDetailForm();
 
-        fetchUsers();   // 전체 목록 다시 조회
-        showSuccess("초기화 완료");
+        fetchUsers()
+            .then(() => {
+                showSuccess("초기화 완료");
+            });
     };
 
     const handleSelectRow = (user) => {
         setSelectedId(user.id);
-        setDetailId(user.id || "");
-        setDetailEmployeeNo(user.employeeNo || "");
-        setDetailLoginId(user.loginId || "");
-        setDetailPassword(user.password || "");
-        setDetailName(user.name || "");
+        
+        setDetail({
+            userId: user.id || "",
+            employeeNo: user.employeeNo || "",
+            loginId: user.loginId || "",
+            password: user.password || "",
+            name: user.name || "",
+            email: user.email || "",
+            phone: user.phone || "",
+            officePhone: user.officePhone || "",
+            teamId: user.teamId || "",
+            positionId: user.positionId || "",
+            status: user.status || "ACTIVE"
+        });
+
         setError("");
         setSuccess("");
     };
@@ -126,16 +173,22 @@ const UserList = () => {
     };
 
     const handleSave = () => {
-        if (!detailEmployeeNo || !detailLoginId || !detailPassword || !detailName) {
+        if (!detail.employeeNo || !detail.loginId || !detail.password || !detail.name) {
             showError("사번, 로그인ID, 비밀번호, 이름은 필수입니다.");
             return;
         }
 
         const userData = {
-            employeeNo: detailEmployeeNo,
-            loginId: detailLoginId,
-            password: detailPassword,
-            name: detailName
+            employeeNo: detail.employeeNo,
+            loginId: detail.loginId,
+            password: detail.password,
+            name: detail.name,
+            email: detail.email,
+            phone: detail.phone,
+            officePhone: detail.officePhone,
+            teamId: detail.teamId,
+            positionId: detail.positionId,
+            status: detail.status
         };
 
         if (selectedId) {
@@ -198,10 +251,8 @@ const UserList = () => {
 
             <div className="section">
                 <UserSearch
-                    searchName={searchName}
-                    setSearchName={setSearchName}
-                    searchLoginId={searchLoginId}
-                    setSearchLoginId={setSearchLoginId}
+                    search={search}
+                    onChangeSearch={handleSearchChange}
                     handleSearch={handleSearch}
                     handleReset={handleReset}
                 />
@@ -226,15 +277,8 @@ const UserList = () => {
 
             <div className="section">
                 <UserDetailForm
-                    detailId={detailId}
-                    detailEmployeeNo={detailEmployeeNo}
-                    detailLoginId={detailLoginId}
-                    detailPassword={detailPassword}
-                    detailName={detailName}
-                    setDetailEmployeeNo={setDetailEmployeeNo}
-                    setDetailLoginId={setDetailLoginId}
-                    setDetailPassword={setDetailPassword}
-                    setDetailName={setDetailName}
+                    detail={detail}
+                    onChangeDetail={handleDetailChange}
                     handleAdd={handleAdd}
                     handleSave={handleSave}
                     handleDelete={handleDelete}

@@ -63,6 +63,15 @@
     background-color: #fff;
 }
 
+.form-select {
+    height: 36px;
+    padding: 0 10px;
+    min-width: 220px;
+    box-sizing: border-box;
+    border: 1px solid #cfcfcf;
+    background-color: #fff;
+}
+
 /* ===== 상세 정보 영역 ===== */
 .detail-header {
     display: flex;
@@ -93,7 +102,7 @@
 }
 
 .detail-field .form-label {
-    width: 80px;
+    width: 90px;
 }
 
 /* ===== 테이블 영역 ===== */

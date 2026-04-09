@@ -1,10 +1,8 @@
 import React from "react";
 
 const UserSearch = ({
-    searchName,
-    setSearchName,
-    searchLoginId,
-    setSearchLoginId,
+    search,
+    onChangeSearch,
     handleSearch,
     handleReset
 }) => {
@@ -23,8 +21,8 @@ const UserSearch = ({
                 <input
                     className="form-input"
                     type="text"
-                    value={searchName}
-                    onChange={(e) => setSearchName(e.target.value)}
+                    value={search.name}
+                    onChange={(e) => onChangeSearch("name", e.target.value)}
                     onKeyDown={handleKeyDown}
                 />
 
@@ -32,8 +30,8 @@ const UserSearch = ({
                 <input
                     className="form-input"
                     type="text"
-                    value={searchLoginId}
-                    onChange={(e) => setSearchLoginId(e.target.value)}
+                    value={search.loginId}
+                    onChange={(e) => onChangeSearch("loginId", e.target.value)}
                     onKeyDown={handleKeyDown}
                 />
 
