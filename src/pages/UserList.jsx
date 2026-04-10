@@ -14,7 +14,9 @@ const UserList = () => {
 
     const [search, setSearch] = useState({
         name: "",
-        loginId: ""
+        teamId: "",
+        positionId: "",
+        status: ""
     });
 
     const [detail, setDetail] = useState({
@@ -38,6 +40,19 @@ const UserList = () => {
     const [confirmMessage, setConfirmMessage] = useState("");
     const [confirmAction, setConfirmAction] = useState(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
+
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [pageGroupSize] = useState(5);
+
+    const currentGroup = Math.floor(currentPage / pageGroupSize);
+    const startPage = currentGroup * pageGroupSize;
+    const endPage = Math.min(startPage + pageGroupSize, totalPages);
+
+    const pageNumbers = Array.from(
+        { length: endPage - startPage },
+        (_, i) => startPage + i
+    );
 
     const handleSearchChange = (field, value) => {
         setSearch((prev) => ({
@@ -90,10 +105,21 @@ const UserList = () => {
         });
     };
 
-    const fetchUsers = () => {
-        return api.get("/users")
+    const fetchUsers = (page = 0) => {
+        const params = {
+            name: search.name || undefined,
+            teamId: search.teamId ? Number(search.teamId) : undefined,
+            positionId: search.positionId ? Number(search.positionId) : undefined,
+            status: search.status || undefined,
+            page,
+            size: 10
+        };
+
+        return api.get("/users", { params })
             .then((res) => {
-                setUsers(res.data);
+                setUsers(res.data.content);
+                setCurrentPage(res.data.number);
+                setTotalPages(res.data.totalPages);
             })
             .catch((err) => {
                 console.error(err);
@@ -107,21 +133,11 @@ const UserList = () => {
     }, []);
 
     const handleSearch = () => {
-        api.get("/users")
-            .then((res) => {
-                const filteredUsers = res.data.filter((user) => {
-                    const matchName =
-                        !search.name || (user.name || "").includes(search.name);
+        setCheckedIds([]);
+        resetDetailForm();
 
-                    const matchLoginId =
-                        !search.loginId || (user.loginId || "").includes(search.loginId);
-
-                    return matchName && matchLoginId;
-                });
-
-                setUsers(filteredUsers);
-                setCheckedIds([]);
-                resetDetailForm();
+        fetchUsers(0)
+            .then(() => {
                 showSuccess("조회 완료");
             })
             .catch((err) => {
@@ -133,13 +149,16 @@ const UserList = () => {
     const handleReset = () => {
         setSearch({
             name: "",
-            loginId: ""
+            teamId: "",
+            positionId: "",
+            status: ""
         });
 
         setCheckedIds([]);
         resetDetailForm();
+        setCurrentPage(0);
 
-        fetchUsers()
+        fetchUsers(0)
             .then(() => {
                 showSuccess("초기화 완료");
             });
@@ -293,6 +312,33 @@ const UserList = () => {
                     handleCheckAll={handleCheckAll}
                     handleSelect={handleSelectRow}
                 />
+            </div>
+
+            <div className="pagination">
+                <button
+                    disabled={startPage === 0}
+                    onClick={() => fetchUsers(startPage - 1)}
+                >
+                    이전
+                </button>
+
+                {/* 페이지 번호 */}
+                {pageNumbers.map((page) => (
+                    <button
+                        key={page}
+                        onClick={() => fetchUsers(page)}
+                        className={currentPage === page ? "active" : ""}
+                    >
+                        {page + 1}
+                    </button>
+                ))}
+
+                <button
+                    disabled={endPage >= totalPages}
+                    onClick={() => fetchUsers(endPage)}
+                >
+                    다음
+                </button>
             </div>
 
             <div className="section">

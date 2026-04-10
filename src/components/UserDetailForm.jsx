@@ -2,7 +2,8 @@ import React from "react";
 import {
     TEAM_OPTIONS,
     POSITION_OPTIONS,
-    STATUS_OPTIONS
+    STATUS_OPTIONS,
+    withEmptyOption
 } from "../constants/userOptions";
 
 const UserDetailForm = ({
@@ -122,7 +123,7 @@ const UserDetailForm = ({
                         value={detail.teamId || ""}
                         onChange={(e) => onChangeDetail("teamId", e.target.value)}
                     >
-                        {TEAM_OPTIONS.map((option) => (
+                        {withEmptyOption(TEAM_OPTIONS, "선택").map((option) => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>
@@ -137,7 +138,7 @@ const UserDetailForm = ({
                         value={detail.positionId || ""}
                         onChange={(e) => onChangeDetail("positionId", e.target.value)}
                     >
-                        {POSITION_OPTIONS.map((option) => (
+                        {withEmptyOption(POSITION_OPTIONS, "선택").map((option) => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>
@@ -152,7 +153,7 @@ const UserDetailForm = ({
                         value={detail.status || ""}
                         onChange={(e) => onChangeDetail("status", e.target.value)}
                     >
-                        {STATUS_OPTIONS.map((option) => (
+                        {withEmptyOption(STATUS_OPTIONS, "선택").map((option) => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>

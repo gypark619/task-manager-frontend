@@ -1,4 +1,10 @@
 import React from "react";
+import {
+    TEAM_OPTIONS,
+    POSITION_OPTIONS,
+    STATUS_OPTIONS,
+    withEmptyOption
+} from "../constants/userOptions";
 
 const UserSearch = ({
     search,
@@ -26,14 +32,44 @@ const UserSearch = ({
                     onKeyDown={handleKeyDown}
                 />
 
-                <label className="form-label">로그인ID</label>
-                <input
-                    className="form-input"
-                    type="text"
-                    value={search.loginId}
-                    onChange={(e) => onChangeSearch("loginId", e.target.value)}
-                    onKeyDown={handleKeyDown}
-                />
+                <label className="form-label">부서</label>
+                <select
+                    className="form-select"
+                    value={search.teamId}
+                    onChange={(e) => onChangeSearch("teamId", e.target.value)}
+                >
+                    {withEmptyOption(TEAM_OPTIONS, "전체").map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+
+                <label className="form-label">직급</label>
+                <select
+                    className="form-select"
+                    value={search.positionId}
+                    onChange={(e) => onChangeSearch("positionId", e.target.value)}
+                >
+                    {withEmptyOption(POSITION_OPTIONS, "전체").map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+
+                <label className="form-label">상태</label>
+                <select
+                    className="form-select"
+                    value={search.status}
+                    onChange={(e) => onChangeSearch("status", e.target.value)}
+                >
+                    {withEmptyOption(STATUS_OPTIONS, "전체").map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
 
                 <button
                     className="button button-primary"
