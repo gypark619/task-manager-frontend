@@ -76,16 +76,6 @@ const UserDetailForm = ({
                 </div>
 
                 <div className="detail-field">
-                    <label className="form-label">비밀번호</label>
-                    <input
-                        className="form-input"
-                        type="password"
-                        value={detail.password}
-                        onChange={(e) => onChangeDetail("password", e.target.value)}
-                    />
-                </div>
-
-                <div className="detail-field">
                     <label className="form-label">이름</label>
                     <input
                         className="form-input"

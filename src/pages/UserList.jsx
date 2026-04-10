@@ -136,7 +136,7 @@ const UserList = () => {
             userId: user.id || "",
             employeeNo: user.employeeNo || "",
             loginId: user.loginId || "",
-            password: user.password || "",
+            password: "",
             name: user.name || "",
             email: user.email || "",
             phone: user.phone || "",
@@ -173,7 +173,7 @@ const UserList = () => {
     };
 
     const handleSave = () => {
-        if (!detail.employeeNo || !detail.loginId || !detail.password || !detail.name) {
+        if (!detail.employeeNo || !detail.loginId || !detail.name) {
             showError("사번, 로그인ID, 비밀번호, 이름은 필수입니다.");
             return;
         }
@@ -181,7 +181,6 @@ const UserList = () => {
         const userData = {
             employeeNo: detail.employeeNo,
             loginId: detail.loginId,
-            password: detail.password,
             name: detail.name,
             email: detail.email,
             phone: detail.phone,
