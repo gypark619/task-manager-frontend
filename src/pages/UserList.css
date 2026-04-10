@@ -1,7 +1,8 @@
 /* ===== 페이지 전체 영역 ===== */
 .page {
     padding: 24px;
-    max-width: 1200px;
+    width: 100%;
+    box-sizing: border-box;
     margin: 0 auto;
     background-color: #fafafa;
 }
@@ -12,22 +13,6 @@
 
 .section {
     margin-bottom: 20px;
-}
-
-/* ===== 메시지 영역 ===== */
-.message-area {
-    min-height: 24px;
-    margin-bottom: 16px;
-}
-
-.message-error {
-    color: #d9534f;
-    margin: 0;
-}
-
-.message-success {
-    color: #2e7d32;
-    margin: 0;
 }
 
 /* ===== 박스 공통 영역 ===== */

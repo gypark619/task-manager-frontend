@@ -3,6 +3,10 @@ import api from "../api/axios";
 import UserSearch from "../components/UserSearch";
 import UserTable from "../components/UserTable";
 import UserDetailForm from "../components/UserDetailForm";
+
+import Toast from "../components/Toast";
+import ConfirmModal from "../components/ConfirmModal";
+
 import "./UserList.css";
 
 const UserList = () => {
@@ -30,8 +34,10 @@ const UserList = () => {
     const [selectedId, setSelectedId] = useState(null);
     const [checkedIds, setCheckedIds] = useState([]);
 
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
+    const [toast, setToast] = useState({ message: "", type: "" });
+    const [confirmMessage, setConfirmMessage] = useState("");
+    const [confirmAction, setConfirmAction] = useState(null);
+    const [confirmOpen, setConfirmOpen] = useState(false);
 
     const handleSearchChange = (field, value) => {
         setSearch((prev) => ({
@@ -48,13 +54,23 @@ const UserList = () => {
     };
 
     const showError = (message) => {
-        setError(message);
-        setSuccess("");
+        setToast({ message, type: "error" });
+        setTimeout(() => setToast({ message: "", type: "" }), 4000);
     };
 
     const showSuccess = (message) => {
-        setSuccess(message);
-        setError("");
+        setToast({ message, type: "success" });
+        setTimeout(() => setToast({ message: "", type: "" }), 4000);
+    };
+    
+    const showInfo = (message) => {
+        setToast({ message, type: "info" });
+        setTimeout(() => setToast({ message: "", type: "" }), 4000);
+    };
+
+    const showWarning = (message) => {
+        setToast({ message, type: "warning" });
+        setTimeout(() => setToast({ message: "", type: "" }), 4000);
     };
 
     const resetDetailForm = () => {
@@ -145,9 +161,6 @@ const UserList = () => {
             positionId: user.positionId || "",
             status: user.status || "ACTIVE"
         });
-
-        setError("");
-        setSuccess("");
     };
 
     const handleCheck = (id) => {
@@ -169,12 +182,12 @@ const UserList = () => {
     const handleAdd = () => {
         setCheckedIds([]);
         resetDetailForm();
-        showSuccess("신규 입력 상태입니다.");
+        showInfo("신규 입력 상태입니다.");
     };
 
     const handleSave = () => {
         if (!detail.employeeNo || !detail.loginId || !detail.name) {
-            showError("사번, 로그인ID, 비밀번호, 이름은 필수입니다.");
+            showError("사번, 로그인ID, 이름은 필수입니다.");
             return;
         }
 
@@ -198,7 +211,12 @@ const UserList = () => {
                 })
                 .catch((err) => {
                     console.error(err);
-                    showError("수정 중 오류 발생");
+
+                    if (err.response?.status === 404) {
+                        showError("선택한 사용자가 존재하지 않습니다.");
+                    } else {
+                        showError("수정 중 오류 발생");
+                    }
                 });
         } else {
             api.post("/users", userData)
@@ -226,8 +244,12 @@ const UserList = () => {
             return;
         }
 
-        if (!window.confirm("정말 삭제하시겠습니까?")) return;
+        setConfirmMessage(`선택한 ${targetIds.length}건을 삭제하시겠습니까?`);
+        setConfirmAction(() => () => confirmDelete(targetIds));
+        setConfirmOpen(true);
+    };
 
+    const confirmDelete = (targetIds) => {
         Promise.all(targetIds.map((id) => api.delete(`/users/${id}`)))
             .then(() => {
                 showSuccess("삭제 완료");
@@ -240,7 +262,12 @@ const UserList = () => {
             })
             .catch((err) => {
                 console.error(err);
-                showError("삭제 중 오류 발생");
+
+                if (err.response?.status === 404) {
+                    showError("이미 삭제되었거나 존재하지 않는 사용자입니다.");
+                } else {
+                    showError("삭제 중 오류 발생");
+                }
             });
     };
 
@@ -268,12 +295,6 @@ const UserList = () => {
                 />
             </div>
 
-            <div className="message-area">
-                <p className={error ? "message-error" : "message-success"}>
-                    {error || success || "\u00A0"}
-                </p>
-            </div>
-
             <div className="section">
                 <UserDetailForm
                     detail={detail}
@@ -283,6 +304,30 @@ const UserList = () => {
                     handleDelete={handleDelete}
                 />
             </div>
+
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                onClose={() => setToast({ message: "", type: "" })}
+            />
+
+            <ConfirmModal
+                open={confirmOpen}
+                message={confirmMessage}
+                onCancel={() => {
+                    setConfirmOpen(false);
+                    setConfirmMessage("");
+                    setConfirmAction(null);
+                }}
+                onConfirm={() => {
+                    setConfirmOpen(false);
+                    if (confirmAction) {
+                        confirmAction();
+                    }
+                    setConfirmMessage("");
+                    setConfirmAction(null);
+                }}
+            />
         </div>
     );
 };
