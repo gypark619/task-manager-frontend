@@ -24,6 +24,8 @@ const UserList = () => {
         direction: "desc"
     });
 
+    const [loading, setLoading] = useState(false);
+
     const [detail, setDetail] = useState({
         userId: "",
         employeeNo: "",
@@ -80,7 +82,14 @@ const UserList = () => {
         }));
     };
 
-    const showError = (message) => {
+    const showError = (errOrMessage, fallbackMessage = "오류가 발생했습니다.") => {
+        let message;
+
+        if (typeof errOrMessage === "string") {
+            message = errOrMessage;
+        } else {
+            message = errOrMessage?.response?.data?.message ?? fallbackMessage;
+        }
         setToast({ message, type: "error" });
         setTimeout(() => setToast({ message: "", type: "" }), 4000);
     };
@@ -117,17 +126,19 @@ const UserList = () => {
         });
     };
 
-    const fetchUsers = (page = 0) => {
+    const fetchUsers = (page = 0, searchParams = search, sortParams = sort) => {
         const params = {
-            name: search.name || undefined,
-            teamId: search.teamId ? Number(search.teamId) : undefined,
-            positionId: search.positionId ? Number(search.positionId) : undefined,
-            status: search.status || undefined,
+            name: searchParams.name || undefined,
+            teamId: searchParams.teamId ? Number(searchParams.teamId) : undefined,
+            positionId: searchParams.positionId ? Number(searchParams.positionId) : undefined,
+            status: searchParams.status || undefined,
             page,
             size: 10,
-            sortField: sort.field,
-            sortDirection: sort.direction
+            sortField: sortParams.field,
+            sortDirection: sortParams.direction
         };
+
+        setLoading(true);
 
         return api.get("/users", { params })
             .then((res) => {
@@ -137,8 +148,11 @@ const UserList = () => {
             })
             .catch((err) => {
                 console.error(err);
-                showError("사용자 목록 조회 실패");
+                showError(err, "사용자 목록 조회 실패");
                 throw err;
+            })
+            .finally(() => {
+                setLoading(false);
             });
     };
 
@@ -150,34 +164,33 @@ const UserList = () => {
         setCheckedIds([]);
         resetDetailForm();
 
-        fetchUsers(0)
+        fetchUsers(0, search, sort)
             .then(() => {
                 showSuccess("조회 완료");
-            })
-            .catch((err) => {
-                console.error(err);
-                showError("조회 중 오류 발생");
             });
     };
 
     const handleReset = () => {
-        setSearch({
+        const resetSearch = {
             name: "",
             teamId: "",
             positionId: "",
             status: ""
-        });
+        };
 
-        setSort({
+        const resetSort = {
             field: "userId",
             direction: "desc"
-        });
+        };
+
+        setSearch(resetSearch);
+        setSort(resetSort);
 
         setCheckedIds([]);
         resetDetailForm();
         setCurrentPage(0);
 
-        fetchUsers(0)
+        fetchUsers(0, resetSearch, resetSort)
             .then(() => {
                 showSuccess("초기화 완료");
             });
@@ -236,8 +249,8 @@ const UserList = () => {
             email: detail.email,
             phone: detail.phone,
             officePhone: detail.officePhone,
-            teamId: detail.teamId,
-            positionId: detail.positionId,
+            teamId: detail.teamId ? Number(detail.teamId) : null,
+            positionId: detail.positionId ? Number(detail.positionId) : null,
             status: detail.status
         };
 
@@ -249,12 +262,7 @@ const UserList = () => {
                 })
                 .catch((err) => {
                     console.error(err);
-
-                    if (err.response?.status === 404) {
-                        showError("선택한 사용자가 존재하지 않습니다.");
-                    } else {
-                        showError("수정 중 오류 발생");
-                    }
+                    showError(err, "수정 중 오류 발생");
                 });
         } else {
             api.post("/users", userData)
@@ -265,7 +273,7 @@ const UserList = () => {
                 })
                 .catch((err) => {
                     console.error(err);
-                    showError("등록 중 오류 발생");
+                    showError(err, "등록 중 오류 발생");
                 });
         }
     };
@@ -300,12 +308,7 @@ const UserList = () => {
             })
             .catch((err) => {
                 console.error(err);
-
-                if (err.response?.status === 404) {
-                    showError("이미 삭제되었거나 존재하지 않는 사용자입니다.");
-                } else {
-                    showError("삭제 중 오류 발생");
-                }
+                showError(err, "삭제 중 오류 발생");
             });
     };
 
@@ -321,6 +324,7 @@ const UserList = () => {
                     handleReset={handleReset}
                     sort={sort}
                     onChangeSort={handleSortChange}
+                    loading={loading}
                 />
             </div>
 

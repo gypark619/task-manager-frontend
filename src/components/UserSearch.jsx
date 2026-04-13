@@ -12,7 +12,8 @@ const UserSearch = ({
     handleSearch,
     handleReset,
     sort,
-    onChangeSort
+    onChangeSort,
+    loading
 }) => {
 
     // Enter로 조회
@@ -93,6 +94,7 @@ const UserSearch = ({
                     className="button button-primary"
                     type="button"
                     onClick={handleSearch}
+                    disabled={loading}
                 >
                     조회
                 </button>
@@ -101,6 +103,7 @@ const UserSearch = ({
                     className="button"
                     type="button"
                     onClick={handleReset}
+                    disabled={loading}
                 >
                     초기화
                 </button>
