@@ -1,10 +1,4 @@
 import React from "react";
-import {
-    TEAM_OPTIONS,
-    POSITION_OPTIONS,
-    STATUS_OPTIONS,
-    getOptionLabel
-} from "../constants/userOptions";
 
 const UserTable = ({
     users,
@@ -52,27 +46,27 @@ const UserTable = ({
                         ) : (
                             users.map((user) => (
                                 <tr
-                                    key={user.id}
+                                    key={user.userId}
                                     onClick={() => handleSelect(user)}
                                     className={`user-table-row ${
-                                        selectedId === user.id ? "selected" : ""
+                                        selectedId === user.userId ? "selected" : ""
                                     }`}
                                 >
                                     <td className="text-center">
                                         <input
                                             type="checkbox"
-                                            checked={checkedIds.includes(user.id)}
+                                            checked={checkedIds.includes(user.userId)}
                                             onClick={(e) => e.stopPropagation()}
-                                            onChange={() => handleCheck(user.id)}
+                                            onChange={() => handleCheck(user.userId)}
                                         />
                                     </td>
-                                    <td className="text-center">{user.id}</td>
+                                    <td className="text-center">{user.userId}</td>
                                     <td>{user.employeeNo}</td>
                                     <td>{user.name}</td>
                                     <td>{user.loginId}</td>
-                                    <td>{getOptionLabel(TEAM_OPTIONS, user.teamId)}</td>
-                                    <td>{getOptionLabel(POSITION_OPTIONS, user.positionId)}</td>
-                                    <td>{getOptionLabel(STATUS_OPTIONS, user.status)}</td>
+                                    <td>{user.teamName}</td>
+                                    <td>{user.positionName}</td>
+                                    <td>{user.statusName}</td>
                                 </tr>
                             ))
                         )}

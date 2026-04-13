@@ -19,6 +19,11 @@ const UserList = () => {
         status: ""
     });
 
+    const [sort, setSort] = useState({
+        field: "userId",
+        direction: "desc"
+    });
+
     const [detail, setDetail] = useState({
         userId: "",
         employeeNo: "",
@@ -59,6 +64,13 @@ const UserList = () => {
             ...prev,
             [field]: value
         }));
+    };
+
+    const handleSortChange = (field, direction) => {
+        setSort({
+            field,
+            direction
+        });
     };
 
     const handleDetailChange = (field, value) => {
@@ -112,13 +124,15 @@ const UserList = () => {
             positionId: search.positionId ? Number(search.positionId) : undefined,
             status: search.status || undefined,
             page,
-            size: 10
+            size: 10,
+            sortField: sort.field,
+            sortDirection: sort.direction
         };
 
         return api.get("/users", { params })
             .then((res) => {
                 setUsers(res.data.content);
-                setCurrentPage(res.data.number);
+                setCurrentPage(res.data.page);
                 setTotalPages(res.data.totalPages);
             })
             .catch((err) => {
@@ -154,6 +168,11 @@ const UserList = () => {
             status: ""
         });
 
+        setSort({
+            field: "userId",
+            direction: "desc"
+        });
+
         setCheckedIds([]);
         resetDetailForm();
         setCurrentPage(0);
@@ -165,10 +184,10 @@ const UserList = () => {
     };
 
     const handleSelectRow = (user) => {
-        setSelectedId(user.id);
+        setSelectedId(user.userId);
         
         setDetail({
-            userId: user.id || "",
+            userId: user.userId || "",
             employeeNo: user.employeeNo || "",
             loginId: user.loginId || "",
             password: "",
@@ -192,7 +211,7 @@ const UserList = () => {
 
     const handleCheckAll = (e) => {
         if (e.target.checked) {
-            setCheckedIds(users.map((user) => user.id));
+            setCheckedIds(users.map((user) => user.userId));
         } else {
             setCheckedIds([]);
         }
@@ -300,6 +319,8 @@ const UserList = () => {
                     onChangeSearch={handleSearchChange}
                     handleSearch={handleSearch}
                     handleReset={handleReset}
+                    sort={sort}
+                    onChangeSort={handleSortChange}
                 />
             </div>
 
