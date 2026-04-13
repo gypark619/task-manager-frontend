@@ -4,7 +4,7 @@ import {
     POSITION_OPTIONS,
     STATUS_OPTIONS,
     withEmptyOption
-} from "../constants/userOptions";
+} from "../../constants/userOptions";
 
 const UserDetailForm = ({
     detail,
@@ -14,9 +14,9 @@ const UserDetailForm = ({
     handleDelete
 }) => {
     return (
-        <div className="detail-box">
-            <div className="detail-header">
-                <h3>상세 정보</h3>
+        <div className="detail-box section-card">
+            <div className="section-header">
+                <h3 className="section-title">상세 정보</h3>
 
                 <div className="detail-button-group">
                     <button

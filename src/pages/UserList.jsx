@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios";
-import UserSearch from "../components/UserSearch";
-import UserTable from "../components/UserTable";
-import UserDetailForm from "../components/UserDetailForm";
+import UserSearch from "../components/user/UserSearch";
+import UserTable from "../components/user/UserTable";
+import UserDetailForm from "../components/user/UserDetailForm";
 
-import Toast from "../components/Toast";
-import ConfirmModal from "../components/ConfirmModal";
+import Toast from "../components/common/Toast";
+import ConfirmModal from "../components/common/ConfirmModal";
+
+import AppLayout from "../components/layout/AppLayout";
 
 import "./UserList.css";
 
@@ -313,93 +315,93 @@ const UserList = () => {
     };
 
     return (
-        <div className="page">
-            <h1 className="page-title">사용자 관리</h1>
+        <AppLayout title="사용자 관리">
+            <div className="page">
+                <div className="section">
+                    <UserSearch
+                        search={search}
+                        onChangeSearch={handleSearchChange}
+                        handleSearch={handleSearch}
+                        handleReset={handleReset}
+                        sort={sort}
+                        onChangeSort={handleSortChange}
+                        loading={loading}
+                    />
+                </div>
 
-            <div className="section">
-                <UserSearch
-                    search={search}
-                    onChangeSearch={handleSearchChange}
-                    handleSearch={handleSearch}
-                    handleReset={handleReset}
-                    sort={sort}
-                    onChangeSort={handleSortChange}
-                    loading={loading}
-                />
-            </div>
+                <div className="section">
+                    <UserTable
+                        users={users}
+                        checkedIds={checkedIds}
+                        selectedId={selectedId}
+                        handleCheck={handleCheck}
+                        handleCheckAll={handleCheckAll}
+                        handleSelect={handleSelectRow}
+                    />
+                </div>
 
-            <div className="section">
-                <UserTable
-                    users={users}
-                    checkedIds={checkedIds}
-                    selectedId={selectedId}
-                    handleCheck={handleCheck}
-                    handleCheckAll={handleCheckAll}
-                    handleSelect={handleSelectRow}
-                />
-            </div>
-
-            <div className="pagination">
-                <button
-                    disabled={startPage === 0}
-                    onClick={() => fetchUsers(startPage - 1)}
-                >
-                    이전
-                </button>
-
-                {/* 페이지 번호 */}
-                {pageNumbers.map((page) => (
+                <div className="pagination">
                     <button
-                        key={page}
-                        onClick={() => fetchUsers(page)}
-                        className={currentPage === page ? "active" : ""}
+                        disabled={startPage === 0}
+                        onClick={() => fetchUsers(startPage - 1)}
                     >
-                        {page + 1}
+                        이전
                     </button>
-                ))}
 
-                <button
-                    disabled={endPage >= totalPages}
-                    onClick={() => fetchUsers(endPage)}
-                >
-                    다음
-                </button>
-            </div>
+                    {/* 페이지 번호 */}
+                    {pageNumbers.map((page) => (
+                        <button
+                            key={page}
+                            onClick={() => fetchUsers(page)}
+                            className={currentPage === page ? "active" : ""}
+                        >
+                            {page + 1}
+                        </button>
+                    ))}
 
-            <div className="section">
-                <UserDetailForm
-                    detail={detail}
-                    onChangeDetail={handleDetailChange}
-                    handleAdd={handleAdd}
-                    handleSave={handleSave}
-                    handleDelete={handleDelete}
+                    <button
+                        disabled={endPage >= totalPages}
+                        onClick={() => fetchUsers(endPage)}
+                    >
+                        다음
+                    </button>
+                </div>
+
+                <div className="section">
+                    <UserDetailForm
+                        detail={detail}
+                        onChangeDetail={handleDetailChange}
+                        handleAdd={handleAdd}
+                        handleSave={handleSave}
+                        handleDelete={handleDelete}
+                    />
+                </div>
+
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast({ message: "", type: "" })}
+                />
+
+                <ConfirmModal
+                    open={confirmOpen}
+                    message={confirmMessage}
+                    onCancel={() => {
+                        setConfirmOpen(false);
+                        setConfirmMessage("");
+                        setConfirmAction(null);
+                    }}
+                    onConfirm={() => {
+                        setConfirmOpen(false);
+                        if (confirmAction) {
+                            confirmAction();
+                        }
+                        setConfirmMessage("");
+                        setConfirmAction(null);
+                    }}
                 />
             </div>
-
-            <Toast
-                message={toast.message}
-                type={toast.type}
-                onClose={() => setToast({ message: "", type: "" })}
-            />
-
-            <ConfirmModal
-                open={confirmOpen}
-                message={confirmMessage}
-                onCancel={() => {
-                    setConfirmOpen(false);
-                    setConfirmMessage("");
-                    setConfirmAction(null);
-                }}
-                onConfirm={() => {
-                    setConfirmOpen(false);
-                    if (confirmAction) {
-                        confirmAction();
-                    }
-                    setConfirmMessage("");
-                    setConfirmAction(null);
-                }}
-            />
-        </div>
+        </AppLayout>
     );
 };
 

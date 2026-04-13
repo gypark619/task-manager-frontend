@@ -9,9 +9,11 @@ const UserTable = ({
     handleSelect
 }) => {
     return (
-        <div className="table-box">
-            <h3 className="user-table-title">사용자 목록</h3>
-
+        <div className="table-box section-card">
+            <div className="section-header">
+                <h3 className="section-title">사용자 목록</h3>
+            </div>
+            
             <div className="table-container">
                 <table className="user-table">
                     <thead>
@@ -61,12 +63,12 @@ const UserTable = ({
                                         />
                                     </td>
                                     <td className="text-center">{user.userId}</td>
-                                    <td>{user.employeeNo}</td>
-                                    <td>{user.name}</td>
+                                    <td className="text-center">{user.employeeNo}</td>
+                                    <td className="text-center">{user.name}</td>
                                     <td>{user.loginId}</td>
                                     <td>{user.teamName}</td>
-                                    <td>{user.positionName}</td>
-                                    <td>{user.statusName}</td>
+                                    <td className="text-center">{user.positionName}</td>
+                                    <td className="text-center">{user.statusName}</td>
                                 </tr>
                             ))
                         )}
