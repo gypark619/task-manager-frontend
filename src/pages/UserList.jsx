@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../api/axios";
+
 import UserSearch from "../components/user/UserSearch";
 import UserTable from "../components/user/UserTable";
 import UserDetailForm from "../components/user/UserDetailForm";
@@ -11,7 +11,11 @@ import AppLayout from "../components/layout/AppLayout";
 
 import "./UserList.css";
 
+import api from "../api/axios";
+import { getUsers, createUser, updateUser, deleteUser } from "../api/userApi";
+
 const UserList = () => {
+    // ===== State =====
     const [users, setUsers] = useState([]);
 
     const [search, setSearch] = useState({
@@ -52,17 +56,9 @@ const UserList = () => {
 
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
-    const [pageGroupSize] = useState(5);
 
-    const currentGroup = Math.floor(currentPage / pageGroupSize);
-    const startPage = currentGroup * pageGroupSize;
-    const endPage = Math.min(startPage + pageGroupSize, totalPages);
 
-    const pageNumbers = Array.from(
-        { length: endPage - startPage },
-        (_, i) => startPage + i
-    );
-
+    // ===== Handler (이벤트/액션) =====
     const handleSearchChange = (field, value) => {
         setSearch((prev) => ({
             ...prev,
@@ -76,91 +72,6 @@ const UserList = () => {
             direction
         });
     };
-
-    const handleDetailChange = (field, value) => {
-        setDetail((prev) => ({
-            ...prev,
-            [field]: value
-        }));
-    };
-
-    const showError = (errOrMessage, fallbackMessage = "오류가 발생했습니다.") => {
-        let message;
-
-        if (typeof errOrMessage === "string") {
-            message = errOrMessage;
-        } else {
-            message = errOrMessage?.response?.data?.message ?? fallbackMessage;
-        }
-        setToast({ message, type: "error" });
-        setTimeout(() => setToast({ message: "", type: "" }), 4000);
-    };
-
-    const showSuccess = (message) => {
-        setToast({ message, type: "success" });
-        setTimeout(() => setToast({ message: "", type: "" }), 4000);
-    };
-    
-    const showInfo = (message) => {
-        setToast({ message, type: "info" });
-        setTimeout(() => setToast({ message: "", type: "" }), 4000);
-    };
-
-    const showWarning = (message) => {
-        setToast({ message, type: "warning" });
-        setTimeout(() => setToast({ message: "", type: "" }), 4000);
-    };
-
-    const resetDetailForm = () => {
-        setSelectedId(null);
-        setDetail({
-            userId: "",
-            employeeNo: "",
-            loginId: "",
-            password: "",
-            name: "",
-            email: "",
-            phone: "",
-            officePhone: "",
-            teamId: "",
-            positionId: "",
-            status: "ACTIVE"
-        });
-    };
-
-    const fetchUsers = (page = 0, searchParams = search, sortParams = sort) => {
-        const params = {
-            name: searchParams.name || undefined,
-            teamId: searchParams.teamId ? Number(searchParams.teamId) : undefined,
-            positionId: searchParams.positionId ? Number(searchParams.positionId) : undefined,
-            status: searchParams.status || undefined,
-            page,
-            size: 10,
-            sortField: sortParams.field,
-            sortDirection: sortParams.direction
-        };
-
-        setLoading(true);
-
-        return api.get("/users", { params })
-            .then((res) => {
-                setUsers(res.data.content);
-                setCurrentPage(res.data.page);
-                setTotalPages(res.data.totalPages);
-            })
-            .catch((err) => {
-                console.error(err);
-                showError(err, "사용자 목록 조회 실패");
-                throw err;
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    };
-
-    useEffect(() => {
-        fetchUsers();
-    }, []);
 
     const handleSearch = () => {
         setCheckedIds([]);
@@ -198,6 +109,22 @@ const UserList = () => {
             });
     };
 
+    const handleCheck = (id) => {
+        setCheckedIds((prev) =>
+            prev.includes(id)
+                ? prev.filter((checkedId) => checkedId !== id)
+                : [...prev, id]
+        );
+    };
+
+    const handleCheckAll = (e) => {
+        if (e.target.checked) {
+            setCheckedIds(users.map((user) => user.userId));
+        } else {
+            setCheckedIds([]);
+        }
+    };
+
     const handleSelectRow = (user) => {
         setSelectedId(user.userId);
         
@@ -214,22 +141,6 @@ const UserList = () => {
             positionId: user.positionId || "",
             status: user.status || "ACTIVE"
         });
-    };
-
-    const handleCheck = (id) => {
-        setCheckedIds((prev) =>
-            prev.includes(id)
-                ? prev.filter((checkedId) => checkedId !== id)
-                : [...prev, id]
-        );
-    };
-
-    const handleCheckAll = (e) => {
-        if (e.target.checked) {
-            setCheckedIds(users.map((user) => user.userId));
-        } else {
-            setCheckedIds([]);
-        }
     };
 
     const handleAdd = () => {
@@ -257,7 +168,7 @@ const UserList = () => {
         };
 
         if (selectedId) {
-            api.put(`/users/${selectedId}`, userData)
+            updateUser(selectedId, userData)
                 .then(() => {
                     showSuccess("수정 완료");
                     fetchUsers();
@@ -267,7 +178,7 @@ const UserList = () => {
                     showError(err, "수정 중 오류 발생");
                 });
         } else {
-            api.post("/users", userData)
+            createUser(userData)
                 .then(() => {
                     showSuccess("등록 완료");
                     fetchUsers();
@@ -298,7 +209,7 @@ const UserList = () => {
     };
 
     const confirmDelete = (targetIds) => {
-        Promise.all(targetIds.map((id) => api.delete(`/users/${id}`)))
+        Promise.all(targetIds.map((id) => deleteUser(id)))
             .then(() => {
                 showSuccess("삭제 완료");
                 setCheckedIds([]);
@@ -313,6 +224,104 @@ const UserList = () => {
                 showError(err, "삭제 중 오류 발생");
             });
     };
+
+    const handleDetailChange = (field, value) => {
+        setDetail((prev) => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const resetDetailForm = () => {
+        setSelectedId(null);
+        setDetail({
+            userId: "",
+            employeeNo: "",
+            loginId: "",
+            password: "",
+            name: "",
+            email: "",
+            phone: "",
+            officePhone: "",
+            teamId: "",
+            positionId: "",
+            status: "ACTIVE"
+        });
+    };
+
+    const fetchUsers = (page = 0, searchParams = search, sortParams = sort) => {
+        const params = {
+            name: searchParams.name || undefined,
+            teamId: searchParams.teamId ? Number(searchParams.teamId) : undefined,
+            positionId: searchParams.positionId ? Number(searchParams.positionId) : undefined,
+            status: searchParams.status || undefined,
+            page,
+            size: 10,
+            sortField: sortParams.field,
+            sortDirection: sortParams.direction
+        };
+
+        setLoading(true);
+
+        return getUsers(params)
+            .then((res) => {
+                setUsers(res.data.content);
+                setCurrentPage(res.data.page);
+                setTotalPages(res.data.totalPages);
+            })
+            .catch((err) => {
+                console.error(err);
+                showError(err, "사용자 목록 조회 실패");
+                throw err;
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    };
+
+
+    // ===== Utils / 계산 =====
+    const [pageGroupSize] = useState(5);
+    const currentGroup = Math.floor(currentPage / pageGroupSize);
+    const startPage = currentGroup * pageGroupSize;
+    const endPage = Math.min(startPage + pageGroupSize, totalPages);
+
+    const pageNumbers = Array.from(
+        { length: endPage - startPage },
+        (_, i) => startPage + i
+    );
+
+    const showError = (errOrMessage, fallbackMessage = "오류가 발생했습니다.") => {
+        let message;
+
+        if (typeof errOrMessage === "string") {
+            message = errOrMessage;
+        } else {
+            message = errOrMessage?.response?.data?.message ?? fallbackMessage;
+        }
+        setToast({ message, type: "error" });
+        setTimeout(() => setToast({ message: "", type: "" }), 4000);
+    };
+
+    const showSuccess = (message) => {
+        setToast({ message, type: "success" });
+        setTimeout(() => setToast({ message: "", type: "" }), 4000);
+    };
+    
+    const showInfo = (message) => {
+        setToast({ message, type: "info" });
+        setTimeout(() => setToast({ message: "", type: "" }), 4000);
+    };
+
+    const showWarning = (message) => {
+        setToast({ message, type: "warning" });
+        setTimeout(() => setToast({ message: "", type: "" }), 4000);
+    };
+    
+    // ===== useEffect =====
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
     return (
         <AppLayout title="사용자 관리">
