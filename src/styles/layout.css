@@ -1,0 +1,73 @@
+/* ===== 페이지 ===== */
+.page {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* ===== 공통 박스 ===== */
+.search-box,
+.table-box,
+.detail-box {
+    padding: 16px 20px;
+    border: 1px solid #e9edf3;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.section-header,
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-title,
+.data-table-title,
+.detail-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+}
+
+
+/* ===== 반응형 ===== */
+@media (max-width: 1200px) {
+    .search-row {
+        grid-template-columns: 1fr;
+    }
+
+    .search-fields {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .search-actions {
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-fields,
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-field {
+        align-items: flex-start;
+    }
+
+    .detail-field .form-label {
+        width: 72px;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 6px 8px;
+        font-size: 13px;
+        white-space: nowrap;
+    }
+}

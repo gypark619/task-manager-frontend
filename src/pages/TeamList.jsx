@@ -9,7 +9,9 @@ import ConfirmModal from "../components/common/ConfirmModal";
 
 import AppLayout from "../components/layout/AppLayout";
 
-import "./UserList.css";
+import "../styles/layout.css";
+import "../styles/form.css";
+import "../styles/table.css";
 
 import api from "../api/axios";
 import { getTeams, createTeam, updateTeam, deleteTeam } from "../api/teamApi";

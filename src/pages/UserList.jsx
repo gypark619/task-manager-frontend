@@ -9,7 +9,9 @@ import ConfirmModal from "../components/common/ConfirmModal";
 
 import AppLayout from "../components/layout/AppLayout";
 
-import "./UserList.css";
+import "../styles/layout.css";
+import "../styles/form.css";
+import "../styles/table.css";
 
 import api from "../api/axios";
 import { getUsers, createUser, updateUser, deleteUser } from "../api/userApi";
@@ -332,7 +334,7 @@ const UserList = () => {
     
     // ===== useEffect =====
     useEffect(() => {
-        fetchTeams(currentPage, size, search, sort);
+        fetchUsers(currentPage, size, search, sort);
     }, [currentPage, size, sort]);
 
     return (

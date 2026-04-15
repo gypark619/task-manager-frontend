@@ -48,7 +48,7 @@ const TeamTable = ({
             </div>
             
             <div className="table-container">
-                <table className="user-table">
+                <table className="data-table">
                     <thead>
                         <tr>
                             <th className="text-center">
@@ -81,7 +81,7 @@ const TeamTable = ({
                                 <tr
                                     key={team.teamId}
                                     onClick={() => handleSelect(team)}
-                                    className={`user-table-row ${
+                                    className={`data-table-row ${
                                         selectedId === team.teamId ? "selected" : ""
                                     }`}
                                 >

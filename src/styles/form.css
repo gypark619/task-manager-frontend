@@ -1,0 +1,128 @@
+/* ===== 폼 공통 ===== */
+.form-label {
+    width: 80px;
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+.form-input,
+.form-select {
+    height: 32px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    border: 1px solid #d9dee5;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 13px;
+    color: #111827;
+}
+
+/* ===== 검색 영역 ===== */
+.search-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    gap: 16px;
+}
+
+.search-fields {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px 16px;
+}
+
+.search-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.search-item .form-label {
+    width: auto;
+    min-width: 42px;
+    margin: 0;
+    white-space: nowrap;
+    font-size: 16px;
+    color: #111827;
+}
+
+.search-item .form-input,
+.search-item .form-select {
+    width: 100%;
+    min-width: 0;
+}
+
+.search-actions {
+    display: flex;
+    align-self: start;
+    gap: 8px;
+}
+
+/* ===== 상세 정보 영역 ===== */
+.detail-button-group {
+    display: flex;
+    gap: 8px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 28px;
+    row-gap: 10px;
+}
+
+.detail-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.detail-field .form-input,
+.detail-field .form-select {
+    width: 100%;
+}
+
+/* ===== 버튼 ===== */
+.button {
+    min-width: 56px;
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid #d9dee5;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 13px;
+    color: #374151;
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #f3f4f6;
+}
+
+.button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.button-primary {
+    border-color: #93c5fd;
+    background-color: #eff6ff;
+    color: #2563eb;
+}
+
+.button-primary:hover {
+    background-color: #ddeeff;
+}
+
+.button-delete {
+    border-color: #fca5a5;
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+
+.button-delete:hover {
+    background-color: #fdeaea;
+}
