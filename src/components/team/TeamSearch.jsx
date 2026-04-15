@@ -4,7 +4,8 @@ const TeamSearch = ({
     search,
     onChangeSearch,
     handleSearch,
-    handleReset
+    handleReset,
+    loading
 }) => {
 
     // Enter로 조회
@@ -25,6 +26,7 @@ const TeamSearch = ({
                             type="text"
                             value={search.teamName}
                             onChange={(e) => onChangeSearch("teamName", e.target.value)}
+                            onKeyDown={handleKeyDown}
                         />
                     </div>
 
@@ -47,6 +49,7 @@ const TeamSearch = ({
                         className="button button-primary"
                         type="button"
                         onClick={handleSearch}
+                        disabled={loading}
                     >
                         조회
                     </button>
@@ -55,6 +58,7 @@ const TeamSearch = ({
                         className="button"
                         type="button"
                         onClick={handleReset}
+                        disabled={loading}
                     >
                         초기화
                     </button>

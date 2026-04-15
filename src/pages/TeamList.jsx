@@ -12,7 +12,7 @@ import AppLayout from "../components/layout/AppLayout";
 import "./UserList.css";
 
 import api from "../api/axios";
-import { getTeams } from "../api/teamApi";
+import { getTeams, createTeam, updateTeam, deleteTeam } from "../api/teamApi";
 
 const TeamList = () => {
     // ===== State =====
@@ -24,9 +24,12 @@ const TeamList = () => {
     });
 
     const [sort, setSort] = useState({
-        field: "userId",
+        field: "teamId",
         direction: "desc"
     });
+
+    const DEFAULT_SIZE = 10;
+    const [size, setSize] = useState(DEFAULT_SIZE);
 
     const [loading, setLoading] = useState(false);
 
@@ -49,6 +52,7 @@ const TeamList = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
     
+
     // ===== Handler (이벤트/액션) =====
     const handleSearchChange = (field, value) => {
         setSearch((prev) => ({
@@ -57,19 +61,48 @@ const TeamList = () => {
         }));
     };
 
-    const handleSortChange = (field, direction) => {};
+    const handleSortChange = (field, direction) => {
+        setSort({
+            field,
+            direction
+        });
+    };
 
     const handleSearch = () => {
         setCheckedIds([]);
         resetDetailForm();
         
-        fetchTeams(0)
+        fetchTeams(0, size, search, sort)
             .then(() => {
                 showSuccess("조회 완료");
             });
     };
 
-    const handleReset = () => {};
+    const handleReset = () => {
+        const resetSearch = {
+            teamName: "",
+            useYn: ""
+        }
+
+        const resetSort = {
+            field: "teamId",
+            direction: "desc"
+        };
+
+        setSearch(resetSearch);
+        setSort(resetSort);
+        setSize(DEFAULT_SIZE);
+
+        setCheckedIds([]);
+        resetDetailForm();
+        setCurrentPage(0);
+
+        fetchTeams(0, DEFAULT_SIZE, resetSearch, resetSort)
+            .then(() => {
+                showSuccess("초기화 완료");
+            });
+
+    };
 
     const handleCheck = (id) => {
         setCheckedIds((prev) =>
@@ -111,25 +144,69 @@ const TeamList = () => {
             return;
         }
 
-        if(selectedId) {
-            api.put(`teams/${selectedId}`, detail)
+        const teamData = {
+            teamName: detail.teamName,
+            teamLeaderId: detail.teamLeaderId,
+            description: detail.description,
+            useYn: detail.useYn
+        };
+
+        if (selectedId) {
+            updateTeam(selectedId, teamData)
                 .then(() => {
                     showSuccess("수정 완료");
-                    fetchTeams();
+                    fetchTeams(currentPage, size, search, sort);
                 })
+                .catch((err) => {
+                    console.error(err);
+                    showError(err, "수정 중 오류 발생");
+                });
         } else {
-            api.post("/teams", detail)
+            createTeam(teamData)
                 .then(() => {
                     showSuccess("등록 완료");
-                    fetchTeams();
+                    fetchTeams(0, size, search, sort);
                     resetDetailForm();
+                })
+                .catch((err) => {
+                    console.error(err);
+                    showError(err, "등록 중 오류 발생");
                 });
         }
     };
 
     const handleDelete = () => {
-        api.delete(`/teams/${selectedId}`)
-            .then(() => fetchTeams());
+        let targetIds = [];
+
+        if (checkedIds.length > 0) {
+            targetIds = [...checkedIds]
+        } else if (selectedId) {
+            targetIds = [selectedId]
+        } else {
+            showError("삭제할 사용자를 선택하세요.");
+            return;
+        }
+
+        setConfirmMessage(`선택한 ${targetIds.length}건을 삭제하시겠습니까?`);
+        setConfirmAction(() => () => confirmDelete(targetIds));
+        setConfirmOpen(true);
+    };
+
+    const confirmDelete = (targetIds) => {
+        Promise.all(targetIds.map((id) => deleteTeam(id)))
+            .then(() => {
+                showSuccess("삭제 완료");
+                setCheckedIds([]);
+                fetchTeams(currentPage, size, search, sort);
+
+                if (selectedId && targetIds.includes(selectedId)) {
+                    resetDetailForm();
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                showError(err, "삭제 중 오류 발생");
+            });
     };
 
     const handleDetailChange = (field, value) => {
@@ -150,17 +227,36 @@ const TeamList = () => {
         });
     };
 
-    const fetchTeams = (page = 0) => {
+    const fetchTeams = (
+        page = 0, 
+        pageSize = size, 
+        searchParams = search, 
+        sortParams = sort
+    ) => {
         const params = {
-            teamName: search.teamName || "",
-            useYn: search.useYn || "",
+            teamName: searchParams.teamName || undefined,
+            useYn: searchParams.useYn || undefined,
             page,
-            size: 10
+            size: pageSize,
+            sortField: sortParams.field,
+            sortDirection: sortParams.direction
         }
+
+        setLoading(true);
 
         return getTeams(params)
             .then(res => {
-                setTeams(res.data.content)
+                setTeams(res.data.content);
+                setCurrentPage(res.data.page);
+                setTotalPages(res.data.totalPages);
+            })
+            .catch((err) => {
+                console.error(err);
+                showError(err, "부서 목록 조회 실패");
+                throw err;
+            })
+            .finally(() => {
+                setLoading(false);
             });
     };
 
@@ -219,6 +315,7 @@ const TeamList = () => {
                         onChangeSearch={handleSearchChange}
                         handleSearch={handleSearch}
                         handleReset={handleReset}
+                        loading={loading}
                     />
                 </div>
 
@@ -230,13 +327,19 @@ const TeamList = () => {
                         handleCheck={handleCheck}
                         handleCheckAll={handleCheckAll}
                         handleSelect={handleSelectRow}
+                        sort={sort}
+                        onChangeSort={handleSortChange}
+                        size={size}
+                        setSize={setSize}
+                        search={search}
+                        fetchTeams={fetchTeams}
                     />
                 </div>
 
                 <div className="pagination">
                     <button
                         disabled={startPage === 0}
-                        onClick={() => fetchTeams(startPage - 1)}
+                        onClick={() => fetchTeams(startPage - 1, size, search, sort)}
                     >
                         이전
                     </button>
@@ -245,7 +348,7 @@ const TeamList = () => {
                     {pageNumbers.map((page) => (
                         <button
                             key={page}
-                            onClick={() => fetchTeams(page)}
+                            onClick={() => fetchTeams(page, size, search, sort)}
                             className={currentPage === page ? "active" : ""}
                         >
                             {page + 1}
@@ -254,7 +357,7 @@ const TeamList = () => {
 
                     <button
                         disabled={endPage >= totalPages}
-                        onClick={() => fetchTeams(endPage)}
+                        onClick={() => fetchTeams(endPage, size, search, sort)}
                     >
                         다음
                     </button>
