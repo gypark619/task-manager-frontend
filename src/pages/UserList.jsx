@@ -30,6 +30,9 @@ const UserList = () => {
         direction: "desc"
     });
 
+    const DEFAULT_SIZE = 10;
+    const [size, setSize] = useState(DEFAULT_SIZE);
+
     const [loading, setLoading] = useState(false);
 
     const [detail, setDetail] = useState({
@@ -77,7 +80,7 @@ const UserList = () => {
         setCheckedIds([]);
         resetDetailForm();
 
-        fetchUsers(0, search, sort)
+        fetchUsers(0, size, search, sort)
             .then(() => {
                 showSuccess("조회 완료");
             });
@@ -96,6 +99,8 @@ const UserList = () => {
             direction: "desc"
         };
 
+        setSize(DEFAULT_SIZE);
+
         setSearch(resetSearch);
         setSort(resetSort);
 
@@ -103,7 +108,7 @@ const UserList = () => {
         resetDetailForm();
         setCurrentPage(0);
 
-        fetchUsers(0, resetSearch, resetSort)
+        fetchUsers(0, DEFAULT_SIZE, resetSearch, resetSort)
             .then(() => {
                 showSuccess("초기화 완료");
             });
@@ -249,14 +254,14 @@ const UserList = () => {
         });
     };
 
-    const fetchUsers = (page = 0, searchParams = search, sortParams = sort) => {
+    const fetchUsers = (page = 0, size = 10, searchParams = search, sortParams = sort) => {
         const params = {
             name: searchParams.name || undefined,
             teamId: searchParams.teamId ? Number(searchParams.teamId) : undefined,
             positionId: searchParams.positionId ? Number(searchParams.positionId) : undefined,
             status: searchParams.status || undefined,
             page,
-            size: 10,
+            size,
             sortField: sortParams.field,
             sortDirection: sortParams.direction
         };
@@ -332,8 +337,6 @@ const UserList = () => {
                         onChangeSearch={handleSearchChange}
                         handleSearch={handleSearch}
                         handleReset={handleReset}
-                        sort={sort}
-                        onChangeSort={handleSortChange}
                         loading={loading}
                     />
                 </div>
@@ -346,13 +349,19 @@ const UserList = () => {
                         handleCheck={handleCheck}
                         handleCheckAll={handleCheckAll}
                         handleSelect={handleSelectRow}
+                        sort={sort}
+                        onChangeSort={handleSortChange}
+                        size={size}
+                        setSize={setSize}
+                        search={search}
+                        fetchUsers={fetchUsers}
                     />
                 </div>
 
                 <div className="pagination">
                     <button
                         disabled={startPage === 0}
-                        onClick={() => fetchUsers(startPage - 1)}
+                        onClick={() => fetchUsers(startPage - 1, size)}
                     >
                         이전
                     </button>
@@ -361,7 +370,7 @@ const UserList = () => {
                     {pageNumbers.map((page) => (
                         <button
                             key={page}
-                            onClick={() => fetchUsers(page)}
+                            onClick={() => fetchUsers(page, size)}
                             className={currentPage === page ? "active" : ""}
                         >
                             {page + 1}
@@ -370,7 +379,7 @@ const UserList = () => {
 
                     <button
                         disabled={endPage >= totalPages}
-                        onClick={() => fetchUsers(endPage)}
+                        onClick={() => fetchUsers(endPage, size)}
                     >
                         다음
                     </button>

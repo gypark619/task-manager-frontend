@@ -11,8 +11,6 @@ const UserSearch = ({
     onChangeSearch,
     handleSearch,
     handleReset,
-    sort,
-    onChangeSort,
     loading
 }) => {
 
@@ -80,24 +78,6 @@ const UserSearch = ({
                                     {option.label}
                                 </option>
                             ))}
-                        </select>
-                    </div>
-
-                    <div className="search-item">
-                        <label className="form-label">정렬</label>
-                        <select
-                            className="form-select"
-                            value={`${sort.field},${sort.direction}`}
-                            onChange={(e) => {
-                                const [field, direction] = e.target.value.split(",");
-                                onChangeSort(field, direction);
-                            }}
-                        >
-                            <option value="userId,desc">최신순</option>
-                            <option value="name,asc">이름 오름차순</option>
-                            <option value="name,desc">이름 내림차순</option>
-                            <option value="employeeNo,asc">사번 오름차순</option>
-                            <option value="employeeNo,desc">사번 내림차순</option>
                         </select>
                     </div>
                 </div>

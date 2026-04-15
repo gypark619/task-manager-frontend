@@ -6,12 +6,52 @@ const UserTable = ({
     selectedId,
     handleCheck,
     handleCheckAll,
-    handleSelect
+    handleSelect,
+    sort,
+    onChangeSort,
+    size,
+    setSize,
+    search,
+    fetchUsers
 }) => {
     return (
         <div className="table-box section-card">
             <div className="section-header">
                 <h3 className="section-title">사용자 목록</h3>
+
+                <div className="search-item">
+                    <select
+                        title="정렬"
+                        className="form-select"
+                        value={`${sort.field},${sort.direction}`}
+                        onChange={(e) => {
+                            const [field, direction] = e.target.value.split(",");
+                            const newSort = { field, direction };
+                            onChangeSort(field, direction);
+                            fetchUsers(0, size, search, newSort);
+                        }}
+                    >
+                        <option value="userId,desc">최신순</option>
+                        <option value="name,asc">이름 오름차순</option>
+                        <option value="name,desc">이름 내림차순</option>
+                        <option value="employeeNo,asc">사번 오름차순</option>
+                        <option value="employeeNo,desc">사번 내림차순</option>
+                    </select>
+                    <select
+                        title="건수"
+                        className="form-select"
+                        value={size}
+                        onChange={(e) => {
+                            const newSize = Number(e.target.value);
+                            setSize(newSize);
+                            fetchUsers(0, newSize, search, sort);
+                        }}
+                    >
+                        <option value="10">10건</option>
+                        <option value="20">20건</option>
+                        <option value="50">50건</option>
+                    </select>
+                </div>
             </div>
             
             <div className="table-container">
