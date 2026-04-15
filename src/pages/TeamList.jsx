@@ -61,13 +61,6 @@ const TeamList = () => {
         }));
     };
 
-    const handleSortChange = (field, direction) => {
-        setSort({
-            field,
-            direction
-        });
-    };
-
     const handleSearch = () => {
         setCheckedIds([]);
         resetDetailForm();
@@ -102,6 +95,16 @@ const TeamList = () => {
                 showSuccess("초기화 완료");
             });
 
+    };
+
+    const handleSortChange = (field, direction) => {
+        setCurrentPage(0);
+        setSort({ field, direction });
+    };
+
+    const handleSizeChange = (newSize) => {
+        setCurrentPage(0);
+        setSize(newSize);
     };
 
     const handleCheck = (id) => {
@@ -303,8 +306,8 @@ const TeamList = () => {
     
     // ===== useEffect =====
     useEffect(() => {
-        fetchTeams();
-    }, []);
+        fetchTeams(currentPage, size, search, sort);
+    }, [currentPage, size, sort]);
 
     return (
         <AppLayout title="부서 관리">
@@ -330,9 +333,7 @@ const TeamList = () => {
                         sort={sort}
                         onChangeSort={handleSortChange}
                         size={size}
-                        setSize={setSize}
-                        search={search}
-                        fetchTeams={fetchTeams}
+                        onChangeSize={handleSizeChange}
                     />
                 </div>
 

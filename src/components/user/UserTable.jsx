@@ -10,9 +10,7 @@ const UserTable = ({
     sort,
     onChangeSort,
     size,
-    setSize,
-    search,
-    fetchUsers
+    onChangeSize
 }) => {
     return (
         <div className="table-box section-card">
@@ -26,9 +24,7 @@ const UserTable = ({
                         value={`${sort.field},${sort.direction}`}
                         onChange={(e) => {
                             const [field, direction] = e.target.value.split(",");
-                            const newSort = { field, direction };
                             onChangeSort(field, direction);
-                            fetchUsers(0, size, search, newSort);
                         }}
                     >
                         <option value="userId,desc">최신순</option>
@@ -43,8 +39,7 @@ const UserTable = ({
                         value={size}
                         onChange={(e) => {
                             const newSize = Number(e.target.value);
-                            setSize(newSize);
-                            fetchUsers(0, newSize, search, sort);
+                            onChangeSize(newSize);
                         }}
                     >
                         <option value="10">10건</option>

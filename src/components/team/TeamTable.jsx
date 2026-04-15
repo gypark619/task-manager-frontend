@@ -10,9 +10,7 @@ const TeamTable = ({
     sort,
     onChangeSort,
     size,
-    setSize,
-    search,
-    fetchTeams
+    onChangeSize
 }) => {
     return (
         <div className="table-box section-card">
@@ -26,9 +24,7 @@ const TeamTable = ({
                         value={`${sort.field},${sort.direction}`}
                         onChange={(e) => {
                             const [field, direction] = e.target.value.split(",");
-                            const newSort = { field, direction };
                             onChangeSort(field, direction);
-                            fetchTeams(0, size, search, newSort);
                         }}
                     >
                         <option value="teamId,desc">최신순</option>
@@ -41,8 +37,7 @@ const TeamTable = ({
                         value={size}
                         onChange={(e) => {
                             const newSize = Number(e.target.value);
-                            setSize(newSize);
-                            fetchTeams(0, newSize, search, sort);
+                            onChangeSize(newSize);
                         }}
                     >
                         <option value="10">10건</option>

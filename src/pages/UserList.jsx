@@ -69,13 +69,6 @@ const UserList = () => {
         }));
     };
 
-    const handleSortChange = (field, direction) => {
-        setSort({
-            field,
-            direction
-        });
-    };
-
     const handleSearch = () => {
         setCheckedIds([]);
         resetDetailForm();
@@ -111,6 +104,16 @@ const UserList = () => {
             .then(() => {
                 showSuccess("초기화 완료");
             });
+    };
+
+    const handleSortChange = (field, direction) => {
+        setCurrentPage(0);
+        setSort({ field, direction });
+    };
+
+    const handleSizeChange = (newSize) => {
+        setCurrentPage(0);
+        setSize(newSize);
     };
 
     const handleCheck = (id) => {
@@ -329,8 +332,8 @@ const UserList = () => {
     
     // ===== useEffect =====
     useEffect(() => {
-        fetchUsers();
-    }, []);
+        fetchTeams(currentPage, size, search, sort);
+    }, [currentPage, size, sort]);
 
     return (
         <AppLayout title="사용자 관리">
@@ -356,9 +359,7 @@ const UserList = () => {
                         sort={sort}
                         onChangeSort={handleSortChange}
                         size={size}
-                        setSize={setSize}
-                        search={search}
-                        fetchUsers={fetchUsers}
+                        onChangeSize={handleSizeChange}
                     />
                 </div>
 
