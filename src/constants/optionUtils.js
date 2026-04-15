@@ -1,12 +1,6 @@
 // ====================
 // 공통 옵션
 // ====================
-export const TEAM_OPTIONS = [
-    { value: "1", label: "개발팀" },
-    { value: "2", label: "총무팀" },
-    { value: "3", label: "디자인팀" }
-];
-
 export const POSITION_OPTIONS = [
     { value: "1", label: "사원" },
     { value: "2", label: "대리" },
@@ -23,7 +17,7 @@ export const STATUS_OPTIONS = [
 // ====================
 // 전체/선택 값 추가
 // ====================
-export const withEmptyOption = (options, label) => [
+export const withEmptyOption = (options = [], label) => [
     { value: "", label },
     ...options
 ];

@@ -15,10 +15,13 @@ import "../styles/table.css";
 
 import api from "../api/axios";
 import { getUsers, createUser, updateUser, deleteUser } from "../api/userApi";
+import { getTeams } from "../api/teamApi";
 
 const UserList = () => {
     // ===== State =====
     const [users, setUsers] = useState([]);
+
+    const [teams, setTeams] = useState([]);
 
     const [search, setSearch] = useState({
         name: "",
@@ -293,6 +296,22 @@ const UserList = () => {
             });
     };
 
+    const fetchTeamOptions = () => {
+        return getTeams({
+            page: 0,
+            size: 100,
+            sortField: "teamName",
+            sortDirection: "asc"
+        })
+            .then((res) => {
+                setTeams(res.data.content);
+            })
+            .catch((err) => {
+                console.error(err);
+                showError(err, "부서 목록 조회 실패");
+            });
+    };
+
 
     // ===== Utils / 계산 =====
     const [pageGroupSize] = useState(5);
@@ -335,7 +354,13 @@ const UserList = () => {
     // ===== useEffect =====
     useEffect(() => {
         fetchUsers(currentPage, size, search, sort);
+        fetchTeamOptions();
     }, [currentPage, size, sort]);
+
+    const teamOptions = teams.map((team) => ({
+        value: String(team.teamId),
+        label: team.teamName
+    }));
 
     return (
         <AppLayout title="사용자 관리">
@@ -347,6 +372,7 @@ const UserList = () => {
                         handleSearch={handleSearch}
                         handleReset={handleReset}
                         loading={loading}
+                        teamOptions={teamOptions}
                     />
                 </div>
 
@@ -399,6 +425,7 @@ const UserList = () => {
                         handleAdd={handleAdd}
                         handleSave={handleSave}
                         handleDelete={handleDelete}
+                        teamOptions={teamOptions}
                     />
                 </div>
 

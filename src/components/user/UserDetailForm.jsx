@@ -1,17 +1,17 @@
 import React from "react";
 import {
-    TEAM_OPTIONS,
     POSITION_OPTIONS,
     STATUS_OPTIONS,
     withEmptyOption
-} from "../../constants/userOptions";
+} from "../../constants/optionUtils";
 
 const UserDetailForm = ({
     detail,
     onChangeDetail,
     handleAdd,
     handleSave,
-    handleDelete
+    handleDelete,
+    teamOptions = []
 }) => {
     return (
         <div className="detail-box section-card">
@@ -123,7 +123,7 @@ const UserDetailForm = ({
                         value={detail.teamId || ""}
                         onChange={(e) => onChangeDetail("teamId", e.target.value)}
                     >
-                        {withEmptyOption(TEAM_OPTIONS, "선택").map((option) => (
+                        {withEmptyOption(teamOptions, "선택").map((option) => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>

@@ -1,17 +1,17 @@
 import React from "react";
 import {
-    TEAM_OPTIONS,
     POSITION_OPTIONS,
     STATUS_OPTIONS,
     withEmptyOption
-} from "../../constants/userOptions";
+} from "../../constants/optionUtils";
 
 const UserSearch = ({
     search,
     onChangeSearch,
     handleSearch,
     handleReset,
-    loading
+    loading,
+    teamOptions = []
 }) => {
 
     // Enter로 조회
@@ -43,7 +43,7 @@ const UserSearch = ({
                             value={search.teamId}
                             onChange={(e) => onChangeSearch("teamId", e.target.value)}
                         >
-                            {withEmptyOption(TEAM_OPTIONS, "전체").map((option) => (
+                            {withEmptyOption(teamOptions, "전체").map((option) => (
                                 <option key={option.value} value={option.value}>
                                     {option.label}
                                 </option>
