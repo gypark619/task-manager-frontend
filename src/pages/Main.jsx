@@ -7,6 +7,8 @@ function Main() {
       <a href="/teams">부서관리</a>
       <br />
       <a href="/positions">직급관리</a>
+      <br />
+      <a href="/roles">권한관리</a>
     </div>
   );
 }

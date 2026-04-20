@@ -4,6 +4,7 @@ import Main from "./pages/Main";
 import UserList from "./pages/UserList";
 import TeamList from "./pages/TeamList";
 import PositionList from "./pages/PositionList";
+import RoleList from "./pages/RoleList";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/users" element={<UserList />} />
         <Route path="/teams" element={<TeamList />} />
         <Route path="/positions" element={<PositionList />} />
+        <Route path="/roles" element={<RoleList />} />
       </Routes>
     </BrowserRouter>
   );
