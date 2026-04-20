@@ -13,7 +13,7 @@ const RoleTable = ({
     return (
         <div className="table-box section-card">
             <div className="section-header">
-                <h3 className="section-title">직급 목록</h3>
+                <h3 className="section-title">권한 목록</h3>
 
                 <div className="search-item">
                     <select
