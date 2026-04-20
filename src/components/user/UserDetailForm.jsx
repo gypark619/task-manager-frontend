@@ -1,6 +1,5 @@
 import React from "react";
 import {
-    POSITION_OPTIONS,
     STATUS_OPTIONS,
     withEmptyOption
 } from "../../constants/optionUtils";
@@ -11,7 +10,9 @@ const UserDetailForm = ({
     handleAdd,
     handleSave,
     handleDelete,
-    teamOptions = []
+    teamOptions = [],
+    positionOptions = [],
+    roleOptions = []
 }) => {
     return (
         <div className="detail-box section-card">
@@ -138,7 +139,7 @@ const UserDetailForm = ({
                         value={detail.positionId || ""}
                         onChange={(e) => onChangeDetail("positionId", e.target.value)}
                     >
-                        {withEmptyOption(POSITION_OPTIONS, "선택").map((option) => (
+                        {withEmptyOption(positionOptions, "선택").map((option) => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>
@@ -154,6 +155,21 @@ const UserDetailForm = ({
                         onChange={(e) => onChangeDetail("status", e.target.value)}
                     >
                         {withEmptyOption(STATUS_OPTIONS, "선택").map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="detail-field">
+                    <label className="form-label">사용자 권한</label>
+                    <select
+                        className="form-select"
+                        value={detail.roles || ""}
+                        onChange={(e) => onChangeDetail("roles", e.target.value)}
+                    >
+                        {withEmptyOption(roleOptions, "선택").map((option) => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>

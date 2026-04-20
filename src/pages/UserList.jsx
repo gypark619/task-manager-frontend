@@ -16,12 +16,17 @@ import "../styles/table.css";
 import api from "../api/axios";
 import { getUsers, createUser, updateUser, deleteUser } from "../api/userApi";
 import { getTeams } from "../api/teamApi";
+import { getPositions } from "../api/positionApi";
+import { getRoles } from "../api/roleApi";
 
 const UserList = () => {
     // ===== State =====
     const [users, setUsers] = useState([]);
 
     const [teams, setTeams] = useState([]);
+    const [positions, setPositions] = useState([]);
+    const [roles, setRoles] = useState([]);
+    const [userRoles, setUserRoles] = useState([]);
 
     const [search, setSearch] = useState({
         name: "",
@@ -312,6 +317,38 @@ const UserList = () => {
             });
     };
 
+    const fetchPositionOptions = () => {
+        return getPositions({
+            page: 0,
+            size: 100,
+            sortField: "positionName",
+            sortDirection: "asc"
+        })
+            .then((res) => {
+                setPositions(res.data.content);
+            })
+            .catch((err) => {
+                console.error(err);
+                showError(err, "직급 목록 조회 실패");
+            });
+    };
+
+    const fetchRoleOptions = () => {
+        return getRoles({
+            page: 0,
+            size: 100,
+            sortField: "roleName",
+            sortDirection: "asc"
+        })
+            .then((res) => {
+                setRoles(res.data.content);
+            })
+            .catch((err) => {
+                console.error(err);
+                showError(err, "권한 목록 조회 실패");
+            });
+    };
+
 
     // ===== Utils / 계산 =====
     const [pageGroupSize] = useState(5);
@@ -355,11 +392,23 @@ const UserList = () => {
     useEffect(() => {
         fetchUsers(currentPage, size, search, sort);
         fetchTeamOptions();
+        fetchPositionOptions();
+        fetchRoleOptions();
     }, [currentPage, size, sort]);
 
     const teamOptions = teams.map((team) => ({
         value: String(team.teamId),
         label: team.teamName
+    }));
+
+    const positionOptions = positions.map((position) => ({
+        value: String(position.positionId),
+        label: position.positionName
+    }));
+
+    const roleOptions = roles.map((role) => ({
+        value: String(role.roleId),
+        label: role.roleName
     }));
 
     return (
@@ -426,6 +475,8 @@ const UserList = () => {
                         handleSave={handleSave}
                         handleDelete={handleDelete}
                         teamOptions={teamOptions}
+                        positionOptions={positionOptions}
+                        roleOptions={roleOptions}
                     />
                 </div>
 
