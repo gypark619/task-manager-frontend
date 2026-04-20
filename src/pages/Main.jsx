@@ -5,6 +5,8 @@ function Main() {
       <a href="/users">사용자관리</a>
       <br />
       <a href="/teams">부서관리</a>
+      <br />
+      <a href="/positions">직급관리</a>
     </div>
   );
 }

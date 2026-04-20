@@ -1,5 +1,3 @@
-import React from "react";
-
 const TeamTable = ({
     teams,
     checkedIds,
@@ -61,7 +59,7 @@ const TeamTable = ({
                                     onChange={handleCheckAll}
                                 />
                             </th>
-                            <th className="text-center">부서 ID</th>
+                            <th>부서 ID</th>
                             <th>부서명</th>
                             <th>부서장</th>
                             <th>부서 설명</th>

@@ -1,5 +1,3 @@
-import React from "react";
-
 const UserTable = ({
     users,
     checkedIds,
@@ -63,7 +61,7 @@ const UserTable = ({
                                     onChange={handleCheckAll}
                                 />
                             </th>
-                            <th className="text-center">ID</th>
+                            <th>ID</th>
                             <th>사번</th>
                             <th>이름</th>
                             <th>로그인ID</th>
