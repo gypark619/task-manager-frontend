@@ -40,15 +40,15 @@
     border-bottom: 1px solid #e3e8ee;
 }
 
-.data-row {
+.data-table-row {
     cursor: pointer;
 }
 
-.data-row:hover {
+.data-table-row:hover {
     background-color: #f9f9f9;
 }
 
-.data-row.selected {
+.data-table-row.selected {
     background-color: #e6f7ff;
 }
 
