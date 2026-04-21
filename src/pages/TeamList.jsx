@@ -9,6 +9,8 @@ import ConfirmModal from "../components/common/ConfirmModal";
 
 import AppLayout from "../components/layout/AppLayout";
 
+import UserSelectModal from "../components/common/UserSelectModal";
+
 import "../styles/layout.css";
 import "../styles/form.css";
 import "../styles/table.css";
@@ -38,6 +40,8 @@ const TeamList = () => {
         teamId: "",
         teamName: "",
         teamLeaderId: "",
+        teamLeaderEmployeeNo: "",
+        teamLeaderName: "",
         description: "",
         useYn: "Y"
     });
@@ -52,7 +56,8 @@ const TeamList = () => {
 
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
-    
+
+    const [modalOpen, setModalOpen] = useState(false);
 
     // ===== Handler (이벤트/액션) =====
     const handleSearchChange = (field, value) => {
@@ -131,6 +136,8 @@ const TeamList = () => {
             teamId: team.teamId || "",
             teamName: team.teamName || "",
             teamLeaderId: team.teamLeaderId || "",
+            teamLeaderEmployeeNo: team.teamLeaderEmployeeNo || "",
+            teamLeaderName: team.teamLeaderName || "",
             description: team.description || "",
             useYn: team.useYn || "Y"
         });
@@ -226,6 +233,8 @@ const TeamList = () => {
             teamId: "",
             teamName: "",
             teamLeaderId: "",
+            teamLeaderEmployeeNo: "",
+            teamLeaderName: "",
             description: "",
             useYn: "Y"
         });
@@ -372,6 +381,7 @@ const TeamList = () => {
                         handleAdd={handleAdd}
                         handleSave={handleSave}
                         handleDelete={handleDelete}
+                        setModalOpen={setModalOpen}
                     />
                 </div>
 
@@ -398,6 +408,22 @@ const TeamList = () => {
                         setConfirmAction(null);
                     }}
                 />
+
+                {modalOpen && (
+                    <UserSelectModal
+                        teamId={detail.teamId}
+                        onClose={() => setModalOpen(false)}
+                        onSelect={(user) => {
+                            setDetail((prev) => ({
+                                ...prev,
+                                teamLeaderId: user.userId,
+                                teamLeaderEmployeeNo: user.employeeNo,
+                                teamLeaderName: user.name
+                            }));
+                            setModalOpen(false);
+                        }}
+                    />
+                )}
             </div>
         </AppLayout>
     );

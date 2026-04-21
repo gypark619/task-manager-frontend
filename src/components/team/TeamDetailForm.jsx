@@ -3,7 +3,8 @@ const TeamDetailForm = ({
     onChangeDetail,
     handleAdd,
     handleSave,
-    handleDelete
+    handleDelete,
+    setModalOpen
 }) => {
     return (
         <div className="detail-box section-card">
@@ -62,10 +63,24 @@ const TeamDetailForm = ({
                     <label className="form-label">부서장</label>
                     <input
                         className="form-input"
-                        type="text"
-                        value={detail.teamLeaderId}
-                        onChange={(e) => onChangeDetail("teamLeaderId", e.target.value)}
+                        value={detail.teamLeaderEmployeeNo || ""}
+                        readOnly
+                        placeholder="사번"
                     />
+                    <input
+                        className="form-input"
+                        type="text"
+                        value={detail.teamLeaderName || ""}
+                        readOnly
+                        placeholder="이름"
+                    />
+                    <button 
+                        className="button"
+                        type="button"
+                        onClick={() => setModalOpen(true)}
+                    >
+                        선택
+                    </button>
                 </div>
 
                 <div className="detail-field">
