@@ -49,6 +49,16 @@ const UserTable = ({
             
             <div className="table-container">
                 <table className="data-table">
+                    <colgroup>
+                        <col style={{ width: "70px" }} />
+                        <col style={{ width: "150px" }} />
+                        <col style={{ width: "200px" }} />
+                        <col style={{ width: "200px" }} />
+                        <col style={{ width: "300px" }} />
+                        <col style={{ width: "300px" }} />
+                        <col style={{ width: "200px" }} />
+                        <col/>
+                    </colgroup>
                     <thead>
                         <tr>
                             <th className="text-center">

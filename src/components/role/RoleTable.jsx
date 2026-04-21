@@ -47,6 +47,12 @@ const RoleTable = ({
             
             <div className="table-container">
                 <table className="data-table">
+                    <colgroup>
+                        <col style={{ width: "70px" }} />
+                        <col style={{ width: "150px" }} />
+                        <col style={{ width: "500px" }} />
+                        <col/>
+                    </colgroup>
                     <thead>
                         <tr>
                             <th className="text-center">

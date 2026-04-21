@@ -1,6 +1,6 @@
 /* ===== 테이블 영역 ===== */
 .table-container {
-    height: 280px;
+    height: 385px;
     overflow: auto;
     border: 1px solid #e7ebf0;
     border-radius: 6px;
@@ -62,35 +62,24 @@
 
 .table-box .form-select {
   min-width: 100px;
+  width: 150px;
 }
 
-
-/* ===== 테이블 컬럼 폭 ===== */
-.data-table th:nth-child(1),
-.data-table td:nth-child(1) {
+.check-column {
     width: 50px;
+    min-width: 50px;
+    max-width: 50px;
+    padding-left: 0;
+    padding-right: 0;
+    text-align: center;
 }
 
-.data-table th:nth-child(2),
-.data-table td:nth-child(2) {
-    width: 60px;
+.check-column input[type="checkbox"] {
+    margin: 0;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
 }
-
-.data-table th:nth-child(3),
-.data-table td:nth-child(3) {
-    width: 120px;
-}
-
-.data-table th:nth-child(4),
-.data-table td:nth-child(4) {
-    width: 160px;
-}
-
-.data-table th:nth-child(5),
-.data-table td:nth-child(5) {
-    width: auto;
-}
-
 
 /* ===== 페이지 번호 ===== */
 .pagination {

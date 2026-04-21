@@ -39,7 +39,7 @@ const UserDetailForm = ({
 
             <div className="detail-grid">
                 <div className="detail-field">
-                    <label className="form-label">권한 ID</label>
+                    <label className="form-label detail-col-1">권한 ID</label>
                     <input
                         className="form-input"
                         type="text"
@@ -49,7 +49,7 @@ const UserDetailForm = ({
                 </div>
 
                 <div className="detail-field">
-                    <label className="form-label required">권한명</label>
+                    <label className="form-label required detail-col-1">권한명</label>
                     <input
                         className="form-input"
                         type="text"
@@ -58,7 +58,7 @@ const UserDetailForm = ({
                     />
                 </div>
 
-                <div className="detail-field">
+                <div className="detail-field detail-col-2">
                     <label className="form-label">권한 설명</label>
                     <input
                         className="form-input"

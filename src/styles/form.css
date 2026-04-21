@@ -19,6 +19,33 @@
     color: #111827;
 }
 
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    height: 40px;
+    box-sizing: border-box;
+}
+
+.checkbox-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 40px;
+    font-size: 14px;
+    color: #374151;
+    cursor: pointer;
+}
+
+.checkbox-item input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    accent-color: #2563eb;
+    cursor: pointer;
+}
+
 /* ===== 검색 영역 ===== */
 .search-row {
     display: grid;
@@ -69,9 +96,9 @@
 
 .detail-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 28px;
-    row-gap: 10px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px 20px;
+    align-items: start;
 }
 
 .detail-field {
@@ -80,9 +107,38 @@
     gap: 10px;
 }
 
+.detail-field.detail-col-4 {
+    grid-column: span 4;
+}
+
+.detail-field.detail-col-3 {
+    grid-column: span 3;
+}
+
+.detail-field.detail-col-2 {
+    grid-column: span 2;
+}
+
+.detail-field.detail-col-1 {
+    grid-column: span 1;
+}
+
 .detail-field .form-input,
 .detail-field .form-select {
     width: 100%;
+}
+
+.detail-field-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.detail-field-inline .form-input,
+.detail-field-inline .form-select {
+    flex: 1;
+    min-width: 0;
 }
 
 .required::after {

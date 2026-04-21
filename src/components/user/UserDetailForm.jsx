@@ -47,7 +47,7 @@ const UserDetailForm = ({
                 </div>
             </div>
 
-            <div className="detail-grid">
+            <div className="detail-grid detail-col-1">
                 <div className="detail-field">
                     <label className="form-label">ID</label>
                     <input
@@ -58,7 +58,7 @@ const UserDetailForm = ({
                     />
                 </div>
 
-                <div className="detail-field">
+                <div className="detail-field detail-col-1">
                     <label className="form-label required">사번</label>
                     <input
                         className="form-input"
@@ -68,7 +68,7 @@ const UserDetailForm = ({
                     />
                 </div>
 
-                <div className="detail-field">
+                <div className="detail-field detail-col-1">
                     <label className="form-label required">로그인ID</label>
                     <input
                         className="form-input"
@@ -78,7 +78,7 @@ const UserDetailForm = ({
                     />
                 </div>
 
-                <div className="detail-field">
+                <div className="detail-field detail-col-1">
                     <label className="form-label required">이름</label>
                     <input
                         className="form-input"
@@ -88,7 +88,7 @@ const UserDetailForm = ({
                     />
                 </div>
 
-                <div className="detail-field">
+                <div className="detail-field detail-col-2">
                     <label className="form-label">이메일</label>
                     <input
                         className="form-input"
@@ -98,7 +98,7 @@ const UserDetailForm = ({
                     />
                 </div>
 
-                <div className="detail-field">
+                <div className="detail-field detail-col-1">
                     <label className="form-label">휴대폰</label>
                     <input
                         className="form-input"
@@ -108,7 +108,7 @@ const UserDetailForm = ({
                     />
                 </div>
                 
-                <div className="detail-field">
+                <div className="detail-field detail-col-1">
                     <label className="form-label">업무 전화</label>
                     <input
                         className="form-input"
@@ -118,7 +118,7 @@ const UserDetailForm = ({
                     />
                 </div>
                 
-                <div className="detail-field">
+                <div className="detail-field detail-col-1">
                     <label className="form-label">소속 팀</label>
                     <select
                         className="form-select"
@@ -133,7 +133,7 @@ const UserDetailForm = ({
                     </select>
                 </div>
                 
-                <div className="detail-field">
+                <div className="detail-field detail-col-1">
                     <label className="form-label">직급</label>
                     <select
                         className="form-select"
@@ -148,7 +148,7 @@ const UserDetailForm = ({
                     </select>
                 </div>
                 
-                <div className="detail-field">
+                <div className="detail-field detail-col-1">
                     <label className="form-label">사용자 상태</label>
                     <select
                         className="form-select"
@@ -163,18 +163,20 @@ const UserDetailForm = ({
                     </select>
                 </div>
 
-                <div className="detail-field">
+                <div className="detail-field detail-col-1">
                     <label className="form-label">사용자 권한</label>
-                    {roleOptions.map((role) => (
-                        <label key={role.value}>
-                            <input
-                                type="checkbox"
-                                checked={selectedRoleIds.includes(role.value)}
-                                onChange={(e) => handleRoleCheck(role.value, e.target.checked)}
-                            />
-                            {role.label}
-                        </label>
-                    ))}
+                    <div className="checkbox-group">
+                        {roleOptions.map((role) => (
+                            <label key={role.value} className="checkbox-item">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedRoleIds.includes(role.value)}
+                                    onChange={(e) => handleRoleCheck(role.value, e.target.checked)}
+                                    />
+                                {role.label}
+                            </label>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
