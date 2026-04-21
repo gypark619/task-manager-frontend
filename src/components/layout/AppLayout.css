@@ -4,6 +4,7 @@ body,
 #root {
     height: 100%;
     margin: 0;
+    padding: 0;
 }
 
 /* ===== 전체 레이아웃 ===== */
@@ -11,7 +12,7 @@ body,
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: #ffffff;
+    background-color: #f5f6f8;
 }
 
 /* ===== 헤더 영역 ===== */
@@ -26,9 +27,7 @@ body,
 
 .app-layout-header-inner {
     width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 26px 24px 18px;
+    padding: 20px 24px;
     box-sizing: border-box;
 }
 
@@ -36,17 +35,13 @@ body,
 .app-layout-body {
     flex: 1;
     display: flex;
-    background-color: #ffffff;
+    background-color: #f5f6f8;
 }
 
-.app-layout-body-inner {
+.app-layout-content {
     flex: 1;
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 26px 24px 32px;
+    padding: 16px 20px;
     box-sizing: border-box;
-    background-color: #f5f7fa;
 }
 
 /* ===== 페이지 헤더 ===== */
@@ -60,4 +55,34 @@ body,
     margin: 0;
     font-size: 24px;
     font-weight: 700;
+}
+
+/* ===== 사이드바 ===== */
+.sidebar {
+    width: 220px;
+    background-color: #ffffff;
+    border-right: 1px solid #e5e7eb;
+    padding-top: 16px;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-item {
+    padding: 12px 20px;
+    font-size: 14px;
+    color: #374151;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.sidebar-item:hover {
+    background-color: #f3f4f6;
+}
+
+.sidebar-item.active {
+    background-color: #e5e7eb;
+    font-weight: 600;
 }

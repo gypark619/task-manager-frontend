@@ -1,5 +1,6 @@
 import "./AppLayout.css";
 import PageHeader from "./PageHeader";
+import Sidebar from "./Sidebar";
 
 function AppLayout({ title, children, headerRight }) {
     return (
@@ -16,7 +17,8 @@ function AppLayout({ title, children, headerRight }) {
             </header>
 
             <main className="app-layout-body">
-                <div className="app-layout-body-inner">
+                <Sidebar />
+                <div className="app-layout-content">
                     {children}
                 </div>
             </main>

@@ -1,7 +1,7 @@
 /* ===== 페이지 ===== */
 .page {
     display: grid;
-    gap: 16px;
+    gap: 15px;
     width: 100%;
     margin: 0;
     box-sizing: border-box;
@@ -11,7 +11,7 @@
 .search-box,
 .table-box,
 .detail-box {
-    padding: 16px 20px;
+    padding: 15px 20px;
     border: 1px solid #e9edf3;
     border-radius: 8px;
     background-color: #fff;
@@ -22,7 +22,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 15px;
 }
 
 .section-title,
