@@ -15,8 +15,7 @@ function UserSelectModal({ title = "사용자 선택", initialSearch, onClose, o
     const [search, setSearch] = useState({
         employeeNo: initialSearch?.employeeNo || "",
         name: initialSearch?.name || "",
-        teamId: initialSearch?.teamId || "",
-        positionId: ""
+        teamId: initialSearch?.teamId || ""
     });
 
     const [page, setPage] = useState(0);
@@ -38,8 +37,7 @@ function UserSelectModal({ title = "사용자 선택", initialSearch, onClose, o
         const nextSearch = {
             employeeNo: initialSearch?.employeeNo || "",
             name: initialSearch?.name || "",
-            teamId: initialSearch?.teamId || "",
-            positionId: ""
+            teamId: initialSearch?.teamId || ""
         };
 
         setSearch(nextSearch);
@@ -125,8 +123,7 @@ function UserSelectModal({ title = "사용자 선택", initialSearch, onClose, o
                                         const resetSearch = {
                                             employeeNo: "",
                                             name: "",
-                                            teamId: "",
-                                            positionId: ""
+                                            teamId: ""
                                         };
                                         setSearch(resetSearch);
                                         setPage(0);
