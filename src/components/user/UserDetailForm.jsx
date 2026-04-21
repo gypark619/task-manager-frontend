@@ -1,4 +1,3 @@
-import React from "react";
 import {
     STATUS_OPTIONS,
     withEmptyOption

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import TeamSearch from "../components/team/TeamSearch";
 import TeamTable from "../components/team/TeamTable";
@@ -13,7 +13,6 @@ import "../styles/layout.css";
 import "../styles/form.css";
 import "../styles/table.css";
 
-import api from "../api/axios";
 import { getTeams, createTeam, updateTeam, deleteTeam } from "../api/teamApi";
 
 const TeamList = () => {

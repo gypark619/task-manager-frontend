@@ -1,4 +1,3 @@
-import React from "react";
 import {
     STATUS_OPTIONS,
     withEmptyOption
@@ -13,7 +12,6 @@ const UserSearch = ({
     teamOptions = [],
     positionOptions =[]
 }) => {
-
     // Enter로 조회
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {

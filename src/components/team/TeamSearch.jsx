@@ -1,5 +1,3 @@
-import React from "react";
-
 const TeamSearch = ({
     search,
     onChangeSearch,
@@ -7,7 +5,6 @@ const TeamSearch = ({
     handleReset,
     loading
 }) => {
-
     // Enter로 조회
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {

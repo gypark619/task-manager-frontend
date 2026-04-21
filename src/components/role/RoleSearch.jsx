@@ -5,7 +5,6 @@ const UserSearch = ({
     handleReset,
     loading
 }) => {
-
     // Enter로 조회
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import UserSearch from "../components/user/UserSearch";
 import UserTable from "../components/user/UserTable";
@@ -13,7 +13,6 @@ import "../styles/layout.css";
 import "../styles/form.css";
 import "../styles/table.css";
 
-import api from "../api/axios";
 import { getUsers, createUser, updateUser, deleteUser, getUserRoles, saveUserRoles } from "../api/userApi";
 import { getTeams } from "../api/teamApi";
 import { getPositions } from "../api/positionApi";
@@ -142,7 +141,6 @@ const UserList = () => {
     };
 
     const handleSelectRow = (user) => {
-        console.log(user)
         setSelectedId(user.userId);
         
         setDetail({
