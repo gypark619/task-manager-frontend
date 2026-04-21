@@ -8,14 +8,14 @@ import {
     withEmptyOption
 } from "../../constants/optionUtils";
 
-function UserSelectModal({ onClose, onSelect }) {
+function UserSelectModal({ title = "사용자 선택", initialSearch, onClose, onSelect }) {
     const [users, setUsers] = useState([]);
     const [teams, setTeams] = useState([]);
 
     const [search, setSearch] = useState({
-        employeeNo: "",
-        name: "",
-        teamId: "",
+        employeeNo: initialSearch?.employeeNo || "",
+        name: initialSearch?.name || "",
+        teamId: initialSearch?.teamId || "",
         positionId: ""
     });
 
@@ -26,9 +26,8 @@ function UserSelectModal({ onClose, onSelect }) {
         setSearch((prev) => ({ ...prev, [key]: value }));
     };
 
-    const fetchUsers = (pageParam = page) => {
-        getUsers({ ...search, page: pageParam, size: 10 }).then(res => {
-            console.log(res.data)
+    const fetchUsers = (pageParam = page, searchParam = search) => {
+        getUsers({ ...searchParam, page: pageParam, size: 10 }).then((res) => {
             setUsers(res.data.content);
             setPage(res.data.page);
             setTotalPages(res.data.totalPages);
@@ -36,11 +35,25 @@ function UserSelectModal({ onClose, onSelect }) {
     };
 
     useEffect(() => {
-        fetchUsers();
+        const nextSearch = {
+            employeeNo: initialSearch?.employeeNo || "",
+            name: initialSearch?.name || "",
+            teamId: initialSearch?.teamId || "",
+            positionId: ""
+        };
+
+        setSearch(nextSearch);
+
+        getUsers({ ...nextSearch, page: 0, size: 10 }).then(res => {
+            setUsers(res.data.content);
+            setPage(res.data.page);
+            setTotalPages(res.data.totalPages);
+        });
+
         getTeams({ size: 1000 }).then(res => {
             setTeams(res.data.content);
         });
-    }, []);
+    }, [initialSearch]);
 
     const teamOptions = teams.map(team => ({
         value: String(team.teamId),
@@ -51,7 +64,7 @@ function UserSelectModal({ onClose, onSelect }) {
         <div className="modal-overlay">
             <div className="modal-content">
                 <div className="modal-header">
-                    <h3 className="modal-title">부서장 선택</h3>
+                    <h3 className="modal-title">{title}</h3>
                 </div>
 
                 <div className="modal-body">
@@ -117,7 +130,7 @@ function UserSelectModal({ onClose, onSelect }) {
                                         };
                                         setSearch(resetSearch);
                                         setPage(0);
-                                        fetchUsers(0);
+                                        fetchUsers(0, resetSearch);
                                     }}
                                 >
                                     초기화

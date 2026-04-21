@@ -16,6 +16,7 @@ import "../styles/form.css";
 import "../styles/table.css";
 
 import { getTeams, createTeam, updateTeam, deleteTeam } from "../api/teamApi";
+import { getUsers } from "../api/userApi";
 
 const TeamList = () => {
     // ===== State =====
@@ -240,6 +241,33 @@ const TeamList = () => {
         });
     };
 
+    const handleSearchLeader = () => {
+        const params = {
+            employeeNo: detail.teamLeaderEmployeeNo || "",
+            name: detail.teamLeaderName || "",
+            teamId: detail.teamId || "",
+            page: 0,
+            size: 10
+        };
+
+        getUsers(params).then((res) => {
+            const users = res.data.content || [];
+
+            if (users.length === 1) {
+                const user = users[0];
+                setDetail((prev) => ({
+                    ...prev,
+                    teamLeaderId: user.userId,
+                    teamLeaderEmployeeNo: user.employeeNo,
+                    teamLeaderName: user.name
+                }));
+                return;
+            }
+
+            setModalOpen(true);
+        });
+    };
+
     const fetchTeams = (
         page = 0, 
         pageSize = size, 
@@ -381,7 +409,7 @@ const TeamList = () => {
                         handleAdd={handleAdd}
                         handleSave={handleSave}
                         handleDelete={handleDelete}
-                        setModalOpen={setModalOpen}
+                        handleSearchLeader={handleSearchLeader}
                     />
                 </div>
 
@@ -411,7 +439,12 @@ const TeamList = () => {
 
                 {modalOpen && (
                     <UserSelectModal
-                        teamId={detail.teamId}
+                        title="부서장 선택"
+                        initialSearch={{
+                            teamId: detail.teamId || "",
+                            employeeNo: detail.teamLeaderEmployeeNo || "",
+                            name: detail.teamLeaderName || ""
+                        }}
                         onClose={() => setModalOpen(false)}
                         onSelect={(user) => {
                             setDetail((prev) => ({

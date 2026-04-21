@@ -4,7 +4,7 @@ const TeamDetailForm = ({
     handleAdd,
     handleSave,
     handleDelete,
-    setModalOpen
+    handleSearchLeader
 }) => {
     return (
         <div className="detail-box section-card">
@@ -64,20 +64,30 @@ const TeamDetailForm = ({
                     <input
                         className="form-input"
                         value={detail.teamLeaderEmployeeNo || ""}
-                        readOnly
+                        onChange={(e) => onChangeDetail("teamLeaderEmployeeNo", e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                handleSearchLeader();
+                            }
+                        }}
                         placeholder="사번"
                     />
+
                     <input
                         className="form-input"
-                        type="text"
                         value={detail.teamLeaderName || ""}
-                        readOnly
+                        onChange={(e) => onChangeDetail("teamLeaderName", e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                handleSearchLeader();
+                            }
+                        }}
                         placeholder="이름"
                     />
                     <button 
                         className="button"
                         type="button"
-                        onClick={() => setModalOpen(true)}
+                        onClick={handleSearchLeader}
                     >
                         선택
                     </button>

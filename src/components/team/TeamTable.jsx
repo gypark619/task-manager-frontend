@@ -93,7 +93,10 @@ const TeamTable = ({
                                     </td>
                                     <td className="text-center">{team.teamId}</td>
                                     <td>{team.teamName}</td>
-                                    <td className="text-center">{team.teamLeaderId}</td>
+                                    <td className="text-center">
+                                        {team.teamLeaderName}
+                                        {team.teamLeaderEmployeeNo && ` (${team.teamLeaderEmployeeNo})`}
+                                    </td>
                                     <td>{team.description}</td>
                                     <td className="text-center">{team.useYn}</td>
                                 </tr>
