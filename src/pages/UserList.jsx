@@ -14,7 +14,7 @@ import "../styles/form.css";
 import "../styles/table.css";
 
 import api from "../api/axios";
-import { getUsers, createUser, updateUser, deleteUser } from "../api/userApi";
+import { getUsers, createUser, updateUser, deleteUser, getUserRoles, saveUserRoles } from "../api/userApi";
 import { getTeams } from "../api/teamApi";
 import { getPositions } from "../api/positionApi";
 import { getRoles } from "../api/roleApi";
@@ -26,7 +26,7 @@ const UserList = () => {
     const [teams, setTeams] = useState([]);
     const [positions, setPositions] = useState([]);
     const [roles, setRoles] = useState([]);
-    const [userRoles, setUserRoles] = useState([]);
+    const [selectedRoleIds, setSelectedRoleIds] = useState([]);
 
     const [search, setSearch] = useState({
         name: "",
@@ -143,6 +143,7 @@ const UserList = () => {
     };
 
     const handleSelectRow = (user) => {
+        console.log(user)
         setSelectedId(user.userId);
         
         setDetail({
@@ -158,12 +159,30 @@ const UserList = () => {
             positionId: user.positionId || "",
             status: user.status || "ACTIVE"
         });
+
+        getUserRoles(user.userId).then(res => {
+            setSelectedRoleIds(res.data.map(String));
+        });
     };
 
     const handleAdd = () => {
         setCheckedIds([]);
         resetDetailForm();
         showInfo("신규 입력 상태입니다.");
+    };
+
+    const handleRoleCheck = (roleId, checked) => {
+        const id = String(roleId);
+
+        setSelectedRoleIds((prev) =>
+            checked
+                ? prev.includes(id) ? prev : [...prev, id]
+                : prev.filter((v) => v !== id)
+        );
+    };
+
+    const handleSaveUserRoles = (userId, roleIds) => {
+        return saveUserRoles(userId, roleIds);
     };
 
     const handleSave = () => {
@@ -186,6 +205,7 @@ const UserList = () => {
 
         if (selectedId) {
             updateUser(selectedId, userData)
+                .then(() => handleSaveUserRoles(selectedId, selectedRoleIds))
                 .then(() => {
                     showSuccess("수정 완료");
                     fetchUsers(currentPage, size, search, sort);
@@ -196,6 +216,7 @@ const UserList = () => {
                 });
         } else {
             createUser(userData)
+                .then((res) => handleSaveUserRoles(res.data.userId, selectedRoleIds))
                 .then(() => {
                     showSuccess("등록 완료");
                     fetchUsers(0, size, search, sort);
@@ -264,6 +285,7 @@ const UserList = () => {
             positionId: "",
             status: "ACTIVE"
         });
+        setSelectedRoleIds([]);
     };
 
     const fetchUsers = (
@@ -477,6 +499,8 @@ const UserList = () => {
                         teamOptions={teamOptions}
                         positionOptions={positionOptions}
                         roleOptions={roleOptions}
+                        selectedRoleIds={selectedRoleIds}
+                        handleRoleCheck={handleRoleCheck}
                     />
                 </div>
 

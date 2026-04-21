@@ -9,3 +9,8 @@ export const createUser = (data) => api.post("/users", data);
 export const updateUser = (id, data) => api.put(`/users/${id}`, data);
 
 export const deleteUser = (id) => api.delete(`/users/${id}`);
+
+export const getUserRoles = (userId) => api.get(`/users/${userId}/roles`);
+
+export const saveUserRoles = (userId, roleIds) =>
+  api.put(`/users/${userId}/roles`, roleIds.map(Number));

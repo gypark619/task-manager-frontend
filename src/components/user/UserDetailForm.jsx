@@ -12,7 +12,9 @@ const UserDetailForm = ({
     handleDelete,
     teamOptions = [],
     positionOptions = [],
-    roleOptions = []
+    roleOptions = [],
+    selectedRoleIds = [],
+    handleRoleCheck
 }) => {
     return (
         <div className="detail-box section-card">
@@ -164,17 +166,16 @@ const UserDetailForm = ({
 
                 <div className="detail-field">
                     <label className="form-label">사용자 권한</label>
-                    <select
-                        className="form-select"
-                        value={detail.roles || ""}
-                        onChange={(e) => onChangeDetail("roles", e.target.value)}
-                    >
-                        {withEmptyOption(roleOptions, "선택").map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
+                    {roleOptions.map((role) => (
+                        <label key={role.value}>
+                            <input
+                                type="checkbox"
+                                checked={selectedRoleIds.includes(role.value)}
+                                onChange={(e) => handleRoleCheck(role.value, e.target.checked)}
+                            />
+                            {role.label}
+                        </label>
+                    ))}
                 </div>
             </div>
         </div>
