@@ -7,6 +7,14 @@ export const STATUS_OPTIONS = [
     { value: "INACTIVE", label: "퇴직" }
 ];
 
+export const EMAIL_DOMAIN_OPTIONS = [
+    { value: "direct", label: "직접입력" },
+    { value: "gmail.com", label: "gmail.com" },
+    { value: "naver.com", label: "naver.com" },
+    { value: "daum.net", label: "daum.net" },
+    { value: "kakao.com", label: "kakao.com" }
+];
+
 // ====================
 // 전체/선택 값 추가
 // ====================

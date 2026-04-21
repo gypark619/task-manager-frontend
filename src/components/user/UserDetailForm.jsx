@@ -13,8 +13,15 @@ const UserDetailForm = ({
     positionOptions = [],
     roleOptions = [],
     selectedRoleIds = [],
-    handleRoleCheck
+    handleRoleCheck,
+    emailDomainType = "direct",
+    emailDomainOptions = [],
+    onChangeEmailId,
+    onChangeEmailDomain,
+    onChangeEmailDomainType
 }) => {
+    const isDirectInput = emailDomainType === "direct";
+    
     return (
         <div className="detail-box section-card">
             <div className="section-header">
@@ -90,12 +97,49 @@ const UserDetailForm = ({
 
                 <div className="detail-field detail-col-2">
                     <label className="form-label">이메일</label>
-                    <input
-                        className="form-input"
-                        type="text"
-                        value={detail.email}
-                        onChange={(e) => onChangeDetail("email", e.target.value)}
-                    />
+
+                    <div className="detail-field-inline email-field">
+                        <input
+                            className="form-input email-id-input"
+                            type="text"
+                            value={detail.emailId}
+                            onKeyDown={(e) => {
+                                if (e.key === "@") e.preventDefault();
+                            }}
+                            onChange={(e) =>
+                                onChangeEmailId(e.target.value.replace(/@/g, ""))
+                            }
+                            placeholder="아이디"
+                        />
+
+                        <span className="email-at">@</span>
+
+                        <input
+                            className="form-input email-domain-input"
+                            type="text"
+                            value={detail.emailDomain}
+                            onKeyDown={(e) => {
+                                if (e.key === "@") e.preventDefault();
+                            }}
+                            onChange={(e) =>
+                                onChangeEmailDomain(e.target.value.replace(/@/g, ""))
+                            }
+                            placeholder="주소"
+                            disabled={!isDirectInput}
+                        />
+
+                        <select
+                            className="form-select email-domain-select"
+                            value={emailDomainType}
+                            onChange={(e) => onChangeEmailDomainType(e.target.value)}
+                        >
+                            {emailDomainOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
                 <div className="detail-field detail-col-1">

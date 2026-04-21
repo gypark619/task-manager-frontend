@@ -24,7 +24,7 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 12px;
-    height: 40px;
+    min-height: 32px;
     box-sizing: border-box;
 }
 
@@ -32,8 +32,8 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    height: 40px;
     font-size: 14px;
+    line-height: 1;
     color: #374151;
     cursor: pointer;
 }
@@ -144,6 +144,40 @@
 .required::after {
     content: " *";
     color: #ef4444;
+}
+
+/* ===== 이메일 입력 영역 ===== */
+.email-field {
+    width: 100%;
+    gap: 8px;
+}
+
+.email-id-input {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.email-domain-input {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.email-domain-select {
+    width: 120px;
+    min-width: 120px;
+    flex-shrink: 0;
+}
+
+.email-at {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: #374151;
+    line-height: 32px;
+}
+
+.email-domain-input:disabled {
+    background-color: #f3f4f6;
+    color: #6b7280;
 }
 
 /* ===== 버튼 ===== */

@@ -18,6 +18,8 @@ import { getTeams } from "../api/teamApi";
 import { getPositions } from "../api/positionApi";
 import { getRoles } from "../api/roleApi";
 
+import { EMAIL_DOMAIN_OPTIONS } from "../constants/optionUtils";
+
 const UserList = () => {
     // ===== State =====
     const [users, setUsers] = useState([]);
@@ -49,13 +51,16 @@ const UserList = () => {
         employeeNo: "",
         loginId: "",
         name: "",
-        email: "",
+        emailId: "",
+        emailDomain: "",
         phone: "",
         officePhone: "",
         teamId: "",
         positionId: "",
         status: "ACTIVE"
     });
+
+    const [emailDomainType, setEmailDomainType] = useState("direct");
 
     const [selectedId, setSelectedId] = useState(null);
     const [checkedIds, setCheckedIds] = useState([]);
@@ -142,19 +147,30 @@ const UserList = () => {
 
     const handleSelectRow = (user) => {
         setSelectedId(user.userId);
-        
+
+        const email = user.email || "";
+        const [emailId, ...domainParts] = email.split("@");
+
         setDetail({
             userId: user.userId || "",
             employeeNo: user.employeeNo || "",
             loginId: user.loginId || "",
             name: user.name || "",
-            email: user.email || "",
+            emailId: emailId || "",
+            emailDomain: domainParts.join("@") || "",
             phone: user.phone || "",
             officePhone: user.officePhone || "",
             teamId: user.teamId || "",
             positionId: user.positionId || "",
             status: user.status || "ACTIVE"
         });
+
+        const domain = domainParts.join("@");
+        const matched = EMAIL_DOMAIN_OPTIONS.find(
+            (opt) => opt.value !== "direct" && opt.value === domain
+        );
+
+        setEmailDomainType(matched ? domain : "direct");
 
         getUserRoles(user.userId).then(res => {
             setSelectedRoleIds(res.data.map(String));
@@ -181,9 +197,36 @@ const UserList = () => {
         return saveUserRoles(userId, roleIds);
     };
 
+    const isValidEmail = (email = "") => {
+        if (!email) {
+            return true;
+        }
+
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        return emailRegex.test(email);
+    }
+
     const handleSave = () => {
         if (!detail.employeeNo || !detail.loginId || !detail.name) {
             showError("사번, 로그인ID, 이름은 필수입니다.");
+            return;
+        }
+
+        const emailId = detail.emailId.trim();
+        const emailDomain = detail.emailDomain.trim();
+
+        const email =
+            emailId || emailDomain
+                ? `${emailId}${emailDomain ? `@${emailDomain}` : ""}`
+                : "";
+
+        if ((emailId && !emailDomain) || (!emailId && emailDomain)) {
+            showError("이메일 아이디와 도메인을 모두 입력하세요.");
+            return;
+        }
+
+        if (email && !isValidEmail(email)) {
+            showError("이메일 형식이 올바르지 않습니다.");
             return;
         }
 
@@ -191,7 +234,7 @@ const UserList = () => {
             employeeNo: detail.employeeNo,
             loginId: detail.loginId,
             name: detail.name,
-            email: detail.email,
+            email: email,
             phone: detail.phone,
             officePhone: detail.officePhone,
             teamId: detail.teamId ? Number(detail.teamId) : null,
@@ -208,7 +251,10 @@ const UserList = () => {
                 })
                 .catch((err) => {
                     console.error(err);
-                    showError(err, "수정 중 오류 발생");
+                    const message =
+                        err.response?.data?.message || "수정 중 오류 발생";
+
+                    showError(message);
                 });
         } else {
             createUser(userData)
@@ -220,7 +266,10 @@ const UserList = () => {
                 })
                 .catch((err) => {
                     console.error(err);
-                    showError(err, "등록 중 오류 발생");
+                    const message =
+                        err.response?.data?.message || "등록 중 오류 발생";
+
+                    showError(message);
                 });
         }
     };
@@ -266,6 +315,22 @@ const UserList = () => {
         }));
     };
 
+    const handleEmailIdChange = (value) => {
+        handleDetailChange("emailId", value);
+    };
+
+    const handleEmailDomainChange = (value) => {
+        handleDetailChange("emailDomain", value);
+    };
+
+    const handleEmailDomainTypeChange = (value) => {
+        setEmailDomainType(value);
+
+        if (value === "direct") return;
+
+        handleDetailChange("emailDomain", value);
+    };
+
     const resetDetailForm = () => {
         setSelectedId(null);
         setDetail({
@@ -273,7 +338,8 @@ const UserList = () => {
             employeeNo: "",
             loginId: "",
             name: "",
-            email: "",
+            emailId: "",
+            emailDomain: "",
             phone: "",
             officePhone: "",
             teamId: "",
@@ -281,6 +347,7 @@ const UserList = () => {
             status: "ACTIVE"
         });
         setSelectedRoleIds([]);
+        setEmailDomainType("direct");
     };
 
     const fetchUsers = (
@@ -497,6 +564,11 @@ const UserList = () => {
                         roleOptions={roleOptions}
                         selectedRoleIds={selectedRoleIds}
                         handleRoleCheck={handleRoleCheck}
+                        emailDomainType={emailDomainType}
+                        emailDomainOptions={EMAIL_DOMAIN_OPTIONS}
+                        onChangeEmailId={handleEmailIdChange}
+                        onChangeEmailDomain={handleEmailDomainChange}
+                        onChangeEmailDomainType={handleEmailDomainTypeChange}
                     />
                 </div>
 
