@@ -60,7 +60,7 @@ const UserDetailForm = ({
                 </div>
 
                 <div className="detail-field">
-                    <label className="form-label">사번</label>
+                    <label className="form-label required">사번</label>
                     <input
                         className="form-input"
                         type="text"
@@ -70,7 +70,7 @@ const UserDetailForm = ({
                 </div>
 
                 <div className="detail-field">
-                    <label className="form-label">로그인ID</label>
+                    <label className="form-label required">로그인ID</label>
                     <input
                         className="form-input"
                         type="text"
@@ -80,7 +80,7 @@ const UserDetailForm = ({
                 </div>
 
                 <div className="detail-field">
-                    <label className="form-label">이름</label>
+                    <label className="form-label required">이름</label>
                     <input
                         className="form-input"
                         type="text"

@@ -51,7 +51,7 @@ const TeamDetailForm = ({
                 </div>
 
                 <div className="detail-field">
-                    <label className="form-label">부서명</label>
+                    <label className="form-label required">부서명</label>
                     <input
                         className="form-input"
                         type="text"
@@ -81,7 +81,7 @@ const TeamDetailForm = ({
                 </div>
 
                 <div className="detail-field">
-                    <label className="form-label">사용 여부</label>
+                    <label className="form-label required">사용 여부</label>
                     <select
                         className="form-select"
                         value={detail.useYn || ""}

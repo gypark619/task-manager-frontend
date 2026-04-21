@@ -51,7 +51,7 @@ const UserDetailForm = ({
                 </div>
 
                 <div className="detail-field">
-                    <label className="form-label">직급명</label>
+                    <label className="form-label required">직급명</label>
                     <input
                         className="form-input"
                         type="text"
@@ -61,7 +61,7 @@ const UserDetailForm = ({
                 </div>
 
                 <div className="detail-field">
-                    <label className="form-label">직급 레벨</label>
+                    <label className="form-label required">직급 레벨</label>
                     <input
                         className="form-input"
                         type="text"
@@ -71,7 +71,7 @@ const UserDetailForm = ({
                 </div>
 
                 <div className="detail-field">
-                    <label className="form-label">사용 여부</label>
+                    <label className="form-label required">사용 여부</label>
                     <select
                         className="form-select"
                         value={detail.useYn || ""}

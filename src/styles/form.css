@@ -85,6 +85,11 @@
     width: 100%;
 }
 
+.required::after {
+    content: " *";
+    color: #ef4444;
+}
+
 /* ===== 버튼 ===== */
 .button {
     min-width: 56px;
