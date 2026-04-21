@@ -15,6 +15,8 @@ import "../styles/table.css";
 
 import { getRoles, createRole, updateRole, deleteRole } from "../api/roleApi";
 
+import useToast from "../hooks/useToast";
+
 const RoleList = () => {
     // ===== State =====
     const [roles, setRoles] = useState([]);
@@ -42,7 +44,8 @@ const RoleList = () => {
     const [selectedId, setSelectedId] = useState(null);
     const [checkedIds, setCheckedIds] = useState([]);
     
-    const [toast, setToast] = useState({ message: "", type: "" });
+    const { toast, showError, showSuccess, showInfo, showWarning, clearToast } = useToast();
+
     const [confirmMessage, setConfirmMessage] = useState("");
     const [confirmAction, setConfirmAction] = useState(null);
     const [confirmOpen, setConfirmOpen] = useState(false);
@@ -264,32 +267,6 @@ const RoleList = () => {
         (_, i) => startPage + i
     );
 
-    const showError = (errOrMessage, fallbackMessage = "오류가 발생했습니다.") => {
-        let message;
-
-        if (typeof errOrMessage === "string") {
-            message = errOrMessage;
-        } else {
-            message = errOrMessage?.response?.data?.message ?? fallbackMessage;
-        }
-        setToast({ message, type: "error" });
-        setTimeout(() => setToast({ message: "", type: "" }), 4000);
-    };
-
-    const showSuccess = (message) => {
-        setToast({ message, type: "success" });
-        setTimeout(() => setToast({ message: "", type: "" }), 4000);
-    };
-    
-    const showInfo = (message) => {
-        setToast({ message, type: "info" });
-        setTimeout(() => setToast({ message: "", type: "" }), 4000);
-    };
-
-    const showWarning = (message) => {
-        setToast({ message, type: "warning" });
-        setTimeout(() => setToast({ message: "", type: "" }), 4000);
-    };
 
     // ===== useEffect =====
     useEffect(() => {
@@ -364,7 +341,7 @@ const RoleList = () => {
                 <Toast
                     message={toast.message}
                     type={toast.type}
-                    onClose={() => setToast({ message: "", type: "" })}
+                    onClose={clearToast}
                 />
 
                 <ConfirmModal
