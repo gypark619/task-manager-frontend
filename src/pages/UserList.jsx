@@ -441,6 +441,7 @@ const UserList = () => {
                         handleReset={handleReset}
                         loading={loading}
                         teamOptions={teamOptions}
+                        positionOptions={positionOptions}
                     />
                 </div>
 
