@@ -1,25 +1,33 @@
+// React
 import { useEffect, useState } from "react";
 
+// 외부/공통 컴포넌트
+import AppLayout from "../components/layout/AppLayout";
+
+// 페이지 전용 컴포넌트
 import TeamSearch from "../components/team/TeamSearch";
 import TeamTable from "../components/team/TeamTable";
 import TeamDetailForm from "../components/team/TeamDetailForm";
 
+// 공통 UI
 import Toast from "../components/common/Toast";
 import ConfirmModal from "../components/common/ConfirmModal";
-
-import AppLayout from "../components/layout/AppLayout";
-
+import Pagination from "../components/common/Pagination";
 import UserSelectModal from "../components/common/UserSelectModal";
 
+// API
+import { getTeams, createTeam, updateTeam, deleteTeam } from "../api/teamApi";
+import { getUsers } from "../api/userApi";
+
+// hooks
+import useToast from "../hooks/useToast";
+import useConfirm from "../hooks/useConfirm";
+
+// styles
 import "../styles/layout.css";
 import "../styles/form.css";
 import "../styles/table.css";
 
-import { getTeams, createTeam, updateTeam, deleteTeam } from "../api/teamApi";
-import { getUsers } from "../api/userApi";
-
-import useToast from "../hooks/useToast";
-import useConfirm from "../hooks/useConfirm";
 
 const TeamList = () => {
     // ===== State =====
@@ -188,6 +196,23 @@ const TeamList = () => {
         }
     };
 
+    const confirmDelete = (targetIds) => {
+        Promise.all(targetIds.map((id) => deleteTeam(id)))
+            .then(() => {
+                showSuccess("삭제 완료");
+                setCheckedIds([]);
+                fetchTeams(currentPage, size, search, sort);
+
+                if (selectedId && targetIds.includes(selectedId)) {
+                    resetDetailForm();
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                showError(err, "삭제 중 오류 발생");
+            });
+    };
+
     const handleDelete = () => {
         let targetIds = [];
 
@@ -204,23 +229,6 @@ const TeamList = () => {
             message: `선택한 ${targetIds.length}건을 삭제하시겠습니까?`,
             onConfirm: () => confirmDelete(targetIds)
         });
-    };
-
-    const confirmDelete = (targetIds) => {
-        Promise.all(targetIds.map((id) => deleteTeam(id)))
-            .then(() => {
-                showSuccess("삭제 완료");
-                setCheckedIds([]);
-                fetchTeams(currentPage, size, search, sort);
-
-                if (selectedId && targetIds.includes(selectedId)) {
-                    resetDetailForm();
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                showError(err, "삭제 중 오류 발생");
-            });
     };
 
     const handleDetailChange = (field, value) => {
@@ -304,19 +312,6 @@ const TeamList = () => {
     };
 
     
-    // ===== Utils / 계산 =====
-    const [pageGroupSize] = useState(5);
-
-    const currentGroup = Math.floor(currentPage / pageGroupSize);
-    const startPage = currentGroup * pageGroupSize;
-    const endPage = Math.min(startPage + pageGroupSize, totalPages);
-    
-    const pageNumbers = Array.from(
-        { length: endPage - startPage },
-        (_, i) => startPage + i
-    );
-
-    
     // ===== useEffect =====
     useEffect(() => {
         fetchTeams(currentPage, size, search, sort);
@@ -350,32 +345,11 @@ const TeamList = () => {
                     />
                 </div>
 
-                <div className="pagination">
-                    <button
-                        disabled={startPage === 0}
-                        onClick={() => fetchTeams(startPage - 1, size, search, sort)}
-                    >
-                        이전
-                    </button>
-
-                    {/* 페이지 번호 */}
-                    {pageNumbers.map((page) => (
-                        <button
-                            key={page}
-                            onClick={() => fetchTeams(page, size, search, sort)}
-                            className={currentPage === page ? "active" : ""}
-                        >
-                            {page + 1}
-                        </button>
-                    ))}
-
-                    <button
-                        disabled={endPage >= totalPages}
-                        onClick={() => fetchTeams(endPage, size, search, sort)}
-                    >
-                        다음
-                    </button>
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChangePage={(page) => fetchTeams(page, size, search, sort)}
+                />
 
                 <div className="section">
                     <TeamDetailForm

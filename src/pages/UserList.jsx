@@ -1,27 +1,37 @@
+// React
 import { useEffect, useState } from "react";
 
+// 외부/공통 컴포넌트
+import AppLayout from "../components/layout/AppLayout";
+
+// 페이지 전용 컴포넌트
 import UserSearch from "../components/user/UserSearch";
 import UserTable from "../components/user/UserTable";
 import UserDetailForm from "../components/user/UserDetailForm";
 
+// 공통 UI
 import Toast from "../components/common/Toast";
 import ConfirmModal from "../components/common/ConfirmModal";
+import Pagination from "../components/common/Pagination";
 
-import AppLayout from "../components/layout/AppLayout";
-
-import "../styles/layout.css";
-import "../styles/form.css";
-import "../styles/table.css";
-
+// API
 import { getUsers, createUser, updateUser, deleteUser, getUserRoles, saveUserRoles } from "../api/userApi";
 import { getTeams } from "../api/teamApi";
 import { getPositions } from "../api/positionApi";
 import { getRoles } from "../api/roleApi";
 
+// constants
 import { EMAIL_DOMAIN_OPTIONS } from "../constants/optionUtils";
 
+// hooks
 import useToast from "../hooks/useToast";
 import useConfirm from "../hooks/useConfirm";
+
+// styles
+import "../styles/layout.css";
+import "../styles/form.css";
+import "../styles/table.css";
+
 
 const UserList = () => {
     // ===== State =====
@@ -274,6 +284,23 @@ const UserList = () => {
                 });
         }
     };
+    
+    const confirmDelete = (targetIds) => {
+        Promise.all(targetIds.map((id) => deleteUser(id)))
+            .then(() => {
+                showSuccess("삭제 완료");
+                setCheckedIds([]);
+                fetchUsers(currentPage, size, search, sort);
+
+                if (selectedId && targetIds.includes(selectedId)) {
+                    resetDetailForm();
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                showError(err, "삭제 중 오류 발생");
+            });
+    };
 
     const handleDelete = () => {
         let targetIds = [];
@@ -291,23 +318,6 @@ const UserList = () => {
             message: `선택한 ${targetIds.length}건을 삭제하시겠습니까?`,
             onConfirm: () => confirmDelete(targetIds)
         });
-    };
-
-    const confirmDelete = (targetIds) => {
-        Promise.all(targetIds.map((id) => deleteUser(id)))
-            .then(() => {
-                showSuccess("삭제 완료");
-                setCheckedIds([]);
-                fetchUsers(currentPage, size, search, sort);
-
-                if (selectedId && targetIds.includes(selectedId)) {
-                    resetDetailForm();
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                showError(err, "삭제 중 오류 발생");
-            });
     };
 
     const handleDetailChange = (field, value) => {
@@ -435,18 +445,6 @@ const UserList = () => {
             });
     };
 
-
-    // ===== Utils / 계산 =====
-    const [pageGroupSize] = useState(5);
-    const currentGroup = Math.floor(currentPage / pageGroupSize);
-    const startPage = currentGroup * pageGroupSize;
-    const endPage = Math.min(startPage + pageGroupSize, totalPages);
-
-    const pageNumbers = Array.from(
-        { length: endPage - startPage },
-        (_, i) => startPage + i
-    );
-
     
     // ===== useEffect =====
     useEffect(() => {
@@ -501,32 +499,11 @@ const UserList = () => {
                     />
                 </div>
 
-                <div className="pagination">
-                    <button
-                        disabled={startPage === 0}
-                        onClick={() => fetchUsers(startPage - 1, size, search, sort)}
-                    >
-                        이전
-                    </button>
-
-                    {/* 페이지 번호 */}
-                    {pageNumbers.map((page) => (
-                        <button
-                            key={page}
-                            onClick={() => fetchUsers(page, size, search, sort)}
-                            className={currentPage === page ? "active" : ""}
-                        >
-                            {page + 1}
-                        </button>
-                    ))}
-
-                    <button
-                        disabled={endPage >= totalPages}
-                        onClick={() => fetchUsers(endPage, size, search, sort)}
-                    >
-                        다음
-                    </button>
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChangePage={(page) => fetchUsers(page, size, search, sort)}
+                />
 
                 <div className="section">
                     <UserDetailForm

@@ -1,22 +1,31 @@
+// React
 import { useEffect, useState } from "react";
 
+// 외부/공통 컴포넌트
+import AppLayout from "../components/layout/AppLayout";
+
+// 페이지 전용 컴포넌트
 import PositionSearch from "../components/position/PositionSearch";
 import PositionTable from "../components/position/PositionTable";
 import PositionDetailForm from "../components/position/PositionDetailForm";
 
+// 공통 UI
 import Toast from "../components/common/Toast";
 import ConfirmModal from "../components/common/ConfirmModal";
+import Pagination from "../components/common/Pagination";
 
-import AppLayout from "../components/layout/AppLayout";
+// API
+import { getPositions, createPosition, updatePosition, deletePosition } from "../api/positionApi";
 
+// hooks
+import useToast from "../hooks/useToast";
+import useConfirm from "../hooks/useConfirm";
+
+// styles
 import "../styles/layout.css";
 import "../styles/form.css";
 import "../styles/table.css";
 
-import { getPositions, createPosition, updatePosition, deletePosition } from "../api/positionApi";
-
-import useToast from "../hooks/useToast";
-import useConfirm from "../hooks/useConfirm";
 
 const PositionList = () => {
     // ===== State =====
@@ -176,6 +185,23 @@ const PositionList = () => {
         }
     }; 
 
+    const confirmDelete = (targetIds) => {
+        Promise.all(targetIds.map((id) => deletePosition(id)))
+            .then(() => {
+                showSuccess("삭제 완료");
+                setCheckedIds([]);
+                fetchPositions(currentPage, size, search, sort);
+
+                if (selectedId && targetIds.includes(selectedId)) {
+                    resetDetailForm();
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                showError(err, "삭제 중 오류 발생");
+            });
+    };
+
     const handleDelete = () => {
         let targetIds = [];
 
@@ -192,23 +218,6 @@ const PositionList = () => {
             message: `선택한 ${targetIds.length}건을 삭제하시겠습니까?`,
             onConfirm: () => confirmDelete(targetIds)
         });
-    }; 
-
-    const confirmDelete = (targetIds) => {
-        Promise.all(targetIds.map((id) => deletePosition(id)))
-            .then(() => {
-                showSuccess("삭제 완료");
-                setCheckedIds([]);
-                fetchPositions(currentPage, size, search, sort);
-
-                if (selectedId && targetIds.includes(selectedId)) {
-                    resetDetailForm();
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                showError(err, "삭제 중 오류 발생");
-            });
     };
 
     const handleDetailChange = (field, value) => {
@@ -262,18 +271,6 @@ const PositionList = () => {
     };
 
 
-    // ===== Utils / 계산 =====
-    const [pageGroupSize] = useState(5);
-    const currentGroup = Math.floor(currentPage / pageGroupSize);
-    const startPage = currentGroup * pageGroupSize;
-    const endPage = Math.min(startPage + pageGroupSize, totalPages);
-
-    const pageNumbers = Array.from(
-        { length: endPage - startPage },
-        (_, i) => startPage + i
-    );
-
-
     // ===== useEffect =====
     useEffect(() => {
         fetchPositions(currentPage, size, search, sort);
@@ -307,32 +304,11 @@ const PositionList = () => {
                     />
                 </div>
 
-                <div className="pagination">
-                    <button
-                        disabled={startPage === 0}
-                        onClick={() => fetchPositions(startPage - 1, size, search, sort)}
-                    >
-                        이전
-                    </button>
-
-                    {/* 페이지 번호 */}
-                    {pageNumbers.map((page) => (
-                        <button
-                            key={page}
-                            onClick={() => fetchPositions(page, size, search, sort)}
-                            className={currentPage === page ? "active" : ""}
-                        >
-                            {page + 1}
-                        </button>
-                    ))}
-
-                    <button
-                        disabled={endPage >= totalPages}
-                        onClick={() => fetchPositions(endPage, size, search, sort)}
-                    >
-                        다음
-                    </button>
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChangePage={(page) => fetchPositions(page, size, search, sort)}
+                />
 
                 <div className="section">
                     <PositionDetailForm

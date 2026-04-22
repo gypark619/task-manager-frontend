@@ -1,22 +1,31 @@
+// React
 import { useEffect, useState } from "react";
 
+// 외부/공통 컴포넌트
+import AppLayout from "../components/layout/AppLayout";
+
+// 페이지 전용 컴포넌트
 import RoleSearch from "../components/role/RoleSearch";
 import RoleTable from "../components/role/RoleTable";
 import RoleDetailForm from "../components/role/RoleDetailForm";
 
+// 공통 UI
 import Toast from "../components/common/Toast";
 import ConfirmModal from "../components/common/ConfirmModal";
+import Pagination from "../components/common/Pagination";
 
-import AppLayout from "../components/layout/AppLayout";
+// API
+import { getRoles, createRole, updateRole, deleteRole } from "../api/roleApi";
 
+// hooks
+import useToast from "../hooks/useToast";
+import useConfirm from "../hooks/useConfirm";
+
+// styles
 import "../styles/layout.css";
 import "../styles/form.css";
 import "../styles/table.css";
 
-import { getRoles, createRole, updateRole, deleteRole } from "../api/roleApi";
-
-import useToast from "../hooks/useToast";
-import useConfirm from "../hooks/useConfirm";
 
 const RoleList = () => {
     // ===== State =====
@@ -171,6 +180,23 @@ const RoleList = () => {
         }
     }; 
 
+    const confirmDelete = (targetIds) => {
+        Promise.all(targetIds.map((id) => deleteRole(id)))
+            .then(() => {
+                showSuccess("삭제 완료");
+                setCheckedIds([]);
+                fetchRoles(currentPage, size, search, sort);
+
+                if (selectedId && targetIds.includes(selectedId)) {
+                    resetDetailForm();
+                }
+            })
+            .catch((err) => {
+                console.error(err);
+                showError(err, "삭제 중 오류 발생");
+            });
+    };
+
     const handleDelete = () => {
         let targetIds = [];
 
@@ -188,23 +214,6 @@ const RoleList = () => {
             onConfirm: () => confirmDelete(targetIds)
         });
     }; 
-
-    const confirmDelete = (targetIds) => {
-        Promise.all(targetIds.map((id) => deleteRole(id)))
-            .then(() => {
-                showSuccess("삭제 완료");
-                setCheckedIds([]);
-                fetchRoles(currentPage, size, search, sort);
-
-                if (selectedId && targetIds.includes(selectedId)) {
-                    resetDetailForm();
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-                showError(err, "삭제 중 오류 발생");
-            });
-    };
 
     const handleDetailChange = (field, value) => {
         setDetail((prev) => ({
@@ -255,18 +264,6 @@ const RoleList = () => {
     };
 
 
-    // ===== Utils / 계산 =====
-    const [pageGroupSize] = useState(5);
-    const currentGroup = Math.floor(currentPage / pageGroupSize);
-    const startPage = currentGroup * pageGroupSize;
-    const endPage = Math.min(startPage + pageGroupSize, totalPages);
-
-    const pageNumbers = Array.from(
-        { length: endPage - startPage },
-        (_, i) => startPage + i
-    );
-
-
     // ===== useEffect =====
     useEffect(() => {
         fetchRoles(currentPage, size, search, sort);
@@ -300,32 +297,11 @@ const RoleList = () => {
                     />
                 </div>
 
-                <div className="pagination">
-                    <button
-                        disabled={startPage === 0}
-                        onClick={() => fetchRoles(startPage - 1, size, search, sort)}
-                    >
-                        이전
-                    </button>
-
-                    {/* 페이지 번호 */}
-                    {pageNumbers.map((page) => (
-                        <button
-                            key={page}
-                            onClick={() => fetchRoles(page, size, search, sort)}
-                            className={currentPage === page ? "active" : ""}
-                        >
-                            {page + 1}
-                        </button>
-                    ))}
-
-                    <button
-                        disabled={endPage >= totalPages}
-                        onClick={() => fetchRoles(endPage, size, search, sort)}
-                    >
-                        다음
-                    </button>
-                </div>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onChangePage={(page) => fetchRoles(page, size, search, sort)}
+                />
 
                 <div className="section">
                     <RoleDetailForm
