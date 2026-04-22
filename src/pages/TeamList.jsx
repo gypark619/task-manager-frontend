@@ -19,6 +19,7 @@ import { getTeams, createTeam, updateTeam, deleteTeam } from "../api/teamApi";
 import { getUsers } from "../api/userApi";
 
 import useToast from "../hooks/useToast";
+import useConfirm from "../hooks/useConfirm";
 
 const TeamList = () => {
     // ===== State =====
@@ -53,10 +54,7 @@ const TeamList = () => {
     const [checkedIds, setCheckedIds] = useState([]);
 
     const { toast, showError, showSuccess, showInfo, showWarning, clearToast } = useToast();
-
-    const [confirmMessage, setConfirmMessage] = useState("");
-    const [confirmAction, setConfirmAction] = useState(null);
-    const [confirmOpen, setConfirmOpen] = useState(false);
+    const { confirm, openConfirm, closeConfirm, handleConfirm } = useConfirm();
 
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -202,9 +200,10 @@ const TeamList = () => {
             return;
         }
 
-        setConfirmMessage(`선택한 ${targetIds.length}건을 삭제하시겠습니까?`);
-        setConfirmAction(() => () => confirmDelete(targetIds));
-        setConfirmOpen(true);
+        openConfirm({
+            message: `선택한 ${targetIds.length}건을 삭제하시겠습니까?`,
+            onConfirm: () => confirmDelete(targetIds)
+        });
     };
 
     const confirmDelete = (targetIds) => {
@@ -396,21 +395,10 @@ const TeamList = () => {
                 />
 
                 <ConfirmModal
-                    open={confirmOpen}
-                    message={confirmMessage}
-                    onCancel={() => {
-                        setConfirmOpen(false);
-                        setConfirmMessage("");
-                        setConfirmAction(null);
-                    }}
-                    onConfirm={() => {
-                        setConfirmOpen(false);
-                        if (confirmAction) {
-                            confirmAction();
-                        }
-                        setConfirmMessage("");
-                        setConfirmAction(null);
-                    }}
+                    open={confirm.open}
+                    message={confirm.message}
+                    onCancel={closeConfirm}
+                    onConfirm={handleConfirm}
                 />
 
                 {modalOpen && (

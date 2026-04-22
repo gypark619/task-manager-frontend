@@ -16,6 +16,7 @@ import "../styles/table.css";
 import { getPositions, createPosition, updatePosition, deletePosition } from "../api/positionApi";
 
 import useToast from "../hooks/useToast";
+import useConfirm from "../hooks/useConfirm";
 
 const PositionList = () => {
     // ===== State =====
@@ -47,10 +48,7 @@ const PositionList = () => {
     const [checkedIds, setCheckedIds] = useState([]);
     
     const { toast, showError, showSuccess, showInfo, showWarning, clearToast } = useToast();
-
-    const [confirmMessage, setConfirmMessage] = useState("");
-    const [confirmAction, setConfirmAction] = useState(null);
-    const [confirmOpen, setConfirmOpen] = useState(false);
+    const { confirm, openConfirm, closeConfirm, handleConfirm } = useConfirm();
     
     const [currentPage, setCurrentPage] = useState([]);
     const [totalPages, setTotalPages] = useState([]);
@@ -190,9 +188,10 @@ const PositionList = () => {
             return;
         }
 
-        setConfirmMessage(`선택한 ${targetIds.length}건을 삭제하시겠습니까?`);
-        setConfirmAction(() => () => confirmDelete(targetIds));
-        setConfirmOpen(true);
+        openConfirm({
+            message: `선택한 ${targetIds.length}건을 삭제하시겠습니까?`,
+            onConfirm: () => confirmDelete(targetIds)
+        });
     }; 
 
     const confirmDelete = (targetIds) => {
@@ -352,21 +351,10 @@ const PositionList = () => {
                 />
 
                 <ConfirmModal
-                    open={confirmOpen}
-                    message={confirmMessage}
-                    onCancel={() => {
-                        setConfirmOpen(false);
-                        setConfirmMessage("");
-                        setConfirmAction(null);
-                    }}
-                    onConfirm={() => {
-                        setConfirmOpen(false);
-                        if (confirmAction) {
-                            confirmAction();
-                        }
-                        setConfirmMessage("");
-                        setConfirmAction(null);
-                    }}
+                    open={confirm.open}
+                    message={confirm.message}
+                    onCancel={closeConfirm}
+                    onConfirm={handleConfirm}
                 />
             </div>
         </AppLayout>
