@@ -1,5 +1,5 @@
 // React
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 // 외부/공통 컴포넌트
 import AppLayout from "../components/layout/AppLayout";
@@ -48,7 +48,7 @@ const TeamList = () => {
 
     const [loading, setLoading] = useState(false);
 
-    const [detail, setDetail] = useState({
+    const EMPTY_DETAIL = {
         teamId: "",
         teamName: "",
         teamLeaderId: "",
@@ -56,9 +56,13 @@ const TeamList = () => {
         teamLeaderName: "",
         description: "",
         useYn: "Y"
-    });
+    };
+
+    const [detail, setDetail] = useState(EMPTY_DETAIL);
+    const [originalDetail, setOriginalDetail] = useState(EMPTY_DETAIL);
 
     const [selectedId, setSelectedId] = useState(null);
+    const [isNew, setIsNew] = useState(false);
     const [checkedIds, setCheckedIds] = useState([]);
 
     const { toast, showError, showSuccess, showInfo, showWarning, clearToast } = useToast();
@@ -66,6 +70,19 @@ const TeamList = () => {
 
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
+
+    const isDetailDisabled = !selectedId;
+
+    const isDirty = useMemo(() => {
+        return (
+            detail.teamName !== originalDetail.teamName ||
+            String(detail.teamLeaderId || "") !== String(originalDetail.teamLeaderId || "") ||
+            detail.teamLeaderEmployeeNo !== originalDetail.teamLeaderEmployeeNo ||
+            detail.teamLeaderName !== originalDetail.teamLeaderName ||
+            detail.description !== originalDetail.description ||
+            detail.useYn !== originalDetail.useYn
+        );
+    }, [detail, originalDetail]);
 
     const { modalOpen, initialSearch, openWithSearch, closeModal, handleSelect } =
         useUserSelectModal({
@@ -156,10 +173,8 @@ const TeamList = () => {
         }
     };
 
-    const handleSelectRow = (team) => {
-        setSelectedId(team.teamId);
-
-        setDetail({
+    const applySelectedTeam = (team) => {
+        const nextDetail = {
             teamId: team.teamId || "",
             teamName: team.teamName || "",
             teamLeaderId: team.teamLeaderId || "",
@@ -167,12 +182,51 @@ const TeamList = () => {
             teamLeaderName: team.teamLeaderName || "",
             description: team.description || "",
             useYn: team.useYn || "Y"
-        });
+        };
+
+        setIsNew(false);
+        setSelectedId(team.teamId);
+        setDetail(nextDetail);
+        setOriginalDetail(nextDetail);
+    };
+
+    const handleSelectRow = (team) => {
+        if (selectedId && team.teamId !== selectedId && (isNew || isDirty)) {
+            showWarning("입력 중인 데이터가 있습니다. 저장 후 이동하세요.");
+            return;
+        }
+
+        applySelectedTeam(team);
     };
 
     const handleAdd = () => {
+        if (isNew || isDirty) {
+            showWarning("입력 중인 데이터가 있습니다. 저장 후 다시 시도하세요.");
+            return;
+        }
+
+        const tempTeamId = `NEW-${Date.now().toString().slice(-5)}`;
+
         setCheckedIds([]);
-        resetDetailForm();
+        setIsNew(true);
+        setSelectedId(tempTeamId);
+
+        setTeams((prev) => [
+            {
+                teamId: tempTeamId,
+                teamName: "",
+                teamLeaderId: "",
+                teamLeaderEmployeeNo: "",
+                teamLeaderName: "",
+                description: "",
+                useYn: "Y"
+            },
+            ...prev
+        ]);
+
+        setDetail(EMPTY_DETAIL);
+        setOriginalDetail(EMPTY_DETAIL);
+
         showInfo("신규 입력 상태입니다.");
     };
 
@@ -189,11 +243,13 @@ const TeamList = () => {
             useYn: detail.useYn
         };
 
-        if (selectedId) {
+        if (!isNew && selectedId) {
+            const focusTeamId = selectedId;
+
             updateTeam(selectedId, teamData)
                 .then(() => {
                     showSuccess("수정 완료");
-                    fetchTeams(currentPage, size, search, sort);
+                    return fetchTeams(currentPage, size, search, sort, focusTeamId);
                 })
                 .catch((err) => {
                     console.error(err);
@@ -201,10 +257,9 @@ const TeamList = () => {
                 });
         } else {
             createTeam(teamData)
-                .then(() => {
+                .then((res) => {
                     showSuccess("등록 완료");
-                    fetchTeams(0, size, search, sort);
-                    resetDetailForm();
+                    return fetchTeams(0, size, search, sort, res.data.teamId);
                 })
                 .catch((err) => {
                     console.error(err);
@@ -231,6 +286,16 @@ const TeamList = () => {
     };
 
     const handleDelete = () => {
+        if (isNew && selectedId) {
+            setTeams((prev) =>
+                prev.filter((team) => team.teamId !== selectedId)
+            );
+
+            resetDetailForm();
+            showSuccess("신규 행이 삭제되었습니다.");
+            return;
+        }
+
         let targetIds = [];
 
         if (checkedIds.length > 0) {
@@ -249,23 +314,39 @@ const TeamList = () => {
     };
 
     const handleDetailChange = (field, value) => {
-        setDetail((perv) => ({
-            ...perv,
-            [field]: value
-        }));
+        setDetail((prev) => {
+            const next = {
+                ...prev,
+                [field]: value
+            };
+
+            if (selectedId) {
+                setTeams((prevTeams) =>
+                    prevTeams.map((team) =>
+                        team.teamId === selectedId
+                            ? {
+                                ...team,
+                                teamName: next.teamName,
+                                teamLeaderId: next.teamLeaderId,
+                                teamLeaderEmployeeNo: next.teamLeaderEmployeeNo,
+                                teamLeaderName: next.teamLeaderName,
+                                description: next.description,
+                                useYn: next.useYn
+                            }
+                            : team
+                    )
+                );
+            }
+
+            return next;
+        });
     };
     
     const resetDetailForm = () => {
         setSelectedId(null);
-        setDetail({
-            teamId: "",
-            teamName: "",
-            teamLeaderId: "",
-            teamLeaderEmployeeNo: "",
-            teamLeaderName: "",
-            description: "",
-            useYn: "Y"
-        });
+        setIsNew(false);
+        setDetail(EMPTY_DETAIL);
+        setOriginalDetail(EMPTY_DETAIL);
     };
 
     const handleSearchLeader = () => {
@@ -277,10 +358,11 @@ const TeamList = () => {
     };
 
     const fetchTeams = (
-        page = 0, 
-        pageSize = size, 
-        searchParams = search, 
-        sortParams = sort
+        page = 0,
+        pageSize = size,
+        searchParams = search,
+        sortParams = sort,
+        focusTeamId = null
     ) => {
         const params = {
             teamName: searchParams.teamName || undefined,
@@ -289,15 +371,31 @@ const TeamList = () => {
             size: pageSize,
             sortField: sortParams.field,
             sortDirection: sortParams.direction
-        }
+        };
 
         setLoading(true);
 
         return getTeams(params)
-            .then(res => {
-                setTeams(res.data.content);
+            .then((res) => {
+                const content = res.data.content || [];
+
+                setTeams(content);
                 setCurrentPage(res.data.page);
                 setTotalPages(res.data.totalPages);
+
+                if (content.length > 0) {
+                    const targetTeam = focusTeamId
+                        ? content.find((team) => String(team.teamId) === String(focusTeamId))
+                        : null;
+
+                    if (targetTeam) {
+                        applySelectedTeam(targetTeam);
+                    } else {
+                        applySelectedTeam(content[0]);
+                    }
+                } else {
+                    resetDetailForm();
+                }
             })
             .catch((err) => {
                 console.error(err);
@@ -357,6 +455,7 @@ const TeamList = () => {
                         handleSave={handleSave}
                         handleDelete={handleDelete}
                         handleSearchLeader={handleSearchLeader}
+                        disabled={isDetailDisabled}
                     />
                 </div>
 

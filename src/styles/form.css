@@ -19,6 +19,7 @@
     color: #111827;
 }
 
+/* ===== 체크박스 ===== */
 .checkbox-group {
     display: flex;
     align-items: center;
@@ -107,21 +108,10 @@
     gap: 10px;
 }
 
-.detail-field.detail-col-4 {
-    grid-column: span 4;
-}
-
-.detail-field.detail-col-3 {
-    grid-column: span 3;
-}
-
-.detail-field.detail-col-2 {
-    grid-column: span 2;
-}
-
-.detail-field.detail-col-1 {
-    grid-column: span 1;
-}
+.detail-field.detail-col-4 { grid-column: span 4; }
+.detail-field.detail-col-3 { grid-column: span 3; }
+.detail-field.detail-col-2 { grid-column: span 2; }
+.detail-field.detail-col-1 { grid-column: span 1; }
 
 .detail-field .form-input,
 .detail-field .form-select {
@@ -141,6 +131,31 @@
     min-width: 0;
 }
 
+/* ===== disabled 상태 ===== */
+.detail-box.disabled .form-input,
+.detail-box.disabled .form-select {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    cursor: default;
+}
+
+.detail-box.disabled .button.button-primary,
+.detail-box.disabled .button.button-delete {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    border-color: #d1d5db;
+}
+
+.detail-box.disabled .checkbox-item,
+.detail-box.disabled .checkbox-item input[type="checkbox"] {
+    cursor: default;
+}
+
+.detail-box.disabled .checkbox-item:hover {
+    background-color: transparent;
+}
+
+/* ===== 필수 표시 ===== */
 .required::after {
     content: " *";
     color: #ef4444;
@@ -152,11 +167,7 @@
     gap: 8px;
 }
 
-.email-id-input {
-    flex: 1 1 0;
-    min-width: 0;
-}
-
+.email-id-input,
 .email-domain-input {
     flex: 1 1 0;
     min-width: 0;
@@ -175,11 +186,6 @@
     line-height: 32px;
 }
 
-.email-domain-input:disabled {
-    background-color: #f3f4f6;
-    color: #6b7280;
-}
-
 /* ===== 버튼 ===== */
 .button {
     min-width: 56px;
@@ -193,13 +199,15 @@
     cursor: pointer;
 }
 
-.button:hover {
+.button:not(:disabled):hover {
     background-color: #f3f4f6;
 }
 
 .button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    border-color: #d1d5db;
+    cursor: default;
 }
 
 .button-primary {

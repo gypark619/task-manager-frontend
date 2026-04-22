@@ -1,5 +1,5 @@
 // React
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 // 외부/공통 컴포넌트
 import AppLayout from "../components/layout/AppLayout";
@@ -45,22 +45,36 @@ const PositionList = () => {
     const [size, setSize] = useState(DEFAULT_SIZE);
     
     const [loading, setLoading] = useState(false);
-    
-    const [detail, setDetail] = useState({
+
+    const EMPTY_DETAIL = {
         positionId: "",
         positionName: "",
         positionLevel: "",
         useYn: "Y"
-    });
-    
+    };
+
+    const [detail, setDetail] = useState(EMPTY_DETAIL);
+    const [originalDetail, setOriginalDetail] = useState(EMPTY_DETAIL);
+
     const [selectedId, setSelectedId] = useState(null);
+    const [isNew, setIsNew] = useState(false);
     const [checkedIds, setCheckedIds] = useState([]);
-    
+
     const { toast, showError, showSuccess, showInfo, showWarning, clearToast } = useToast();
     const { confirm, openConfirm, closeConfirm, handleConfirm } = useConfirm();
-    
-    const [currentPage, setCurrentPage] = useState([]);
-    const [totalPages, setTotalPages] = useState([]);
+
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+
+    const isDetailDisabled = !selectedId;
+
+    const isDirty = useMemo(() => {
+        return (
+            detail.positionName !== originalDetail.positionName ||
+            String(detail.positionLevel || "") !== String(originalDetail.positionLevel || "") ||
+            detail.useYn !== originalDetail.useYn
+        );
+    }, [detail, originalDetail]);
 
 
     // ===== Handler (이벤트/액션) =====
@@ -132,20 +146,54 @@ const PositionList = () => {
         }
     };
 
-    const handleSelectRow = (position) => {
-        setSelectedId(position.positionId);
-
-        setDetail({
+    const applySelectedPosition = (position) => {
+        const nextDetail = {
             positionId: position.positionId || "",
             positionName: position.positionName || "",
             positionLevel: position.positionLevel || "",
             useYn: position.useYn || "Y"
-        });
-    }; 
+        };
+
+        setIsNew(false);
+        setSelectedId(position.positionId);
+        setDetail(nextDetail);
+        setOriginalDetail(nextDetail);
+    };
+
+    const handleSelectRow = (position) => {
+        if (selectedId && position.positionId !== selectedId && (isNew || isDirty)) {
+            showWarning("입력 중인 데이터가 있습니다. 저장 후 이동하세요.");
+            return;
+        }
+
+        applySelectedPosition(position);
+    };
 
     const handleAdd = () => {
+        if (isNew || isDirty) {
+            showWarning("입력 중인 데이터가 있습니다. 저장 후 다시 시도하세요.");
+            return;
+        }
+
+        const tempPositionId = `NEW-${Date.now().toString().slice(-5)}`;
+
         setCheckedIds([]);
-        resetDetailForm();
+        setIsNew(true);
+        setSelectedId(tempPositionId);
+
+        setPositions((prev) => [
+            {
+                positionId: tempPositionId,
+                positionName: "",
+                positionLevel: "",
+                useYn: "Y"
+            },
+            ...prev
+        ]);
+
+        setDetail(EMPTY_DETAIL);
+        setOriginalDetail(EMPTY_DETAIL);
+
         showInfo("신규 입력 상태입니다.");
     };
 
@@ -161,11 +209,13 @@ const PositionList = () => {
             useYn: detail.useYn
         };
 
-        if (selectedId) {
+        if (!isNew && selectedId) {
+            const focusPositionId = selectedId;
+
             updatePosition(selectedId, userData)
                 .then(() => {
                     showSuccess("수정 완료");
-                    fetchPositions(currentPage, size, search, sort);
+                    return fetchPositions(currentPage, size, search, sort, focusPositionId);
                 })
                 .catch((err) => {
                     console.error(err);
@@ -173,17 +223,16 @@ const PositionList = () => {
                 });
         } else {
             createPosition(userData)
-                .then(() => {
+                .then((res) => {
                     showSuccess("등록 완료");
-                    fetchPositions(0, size, search, sort);
-                    resetDetailForm();
+                    return fetchPositions(0, size, search, sort, res.data.positionId);
                 })
                 .catch((err) => {
                     console.error(err);
                     showError(err, "등록 중 오류 발생");
                 });
         }
-    }; 
+    };
 
     const confirmDelete = (targetIds) => {
         Promise.all(targetIds.map((id) => deletePosition(id)))
@@ -203,12 +252,22 @@ const PositionList = () => {
     };
 
     const handleDelete = () => {
+        if (isNew && selectedId) {
+            setPositions((prev) =>
+                prev.filter((position) => position.positionId !== selectedId)
+            );
+
+            resetDetailForm();
+            showSuccess("신규 행이 삭제되었습니다.");
+            return;
+        }
+
         let targetIds = [];
 
         if (checkedIds.length > 0) {
             targetIds = [...checkedIds];
         } else if (selectedId) {
-            targetIds = [selectedId]
+            targetIds = [selectedId];
         } else {
             showError("삭제할 사용자를 선택하세요.");
             return;
@@ -221,27 +280,44 @@ const PositionList = () => {
     };
 
     const handleDetailChange = (field, value) => {
-        setDetail((prev) => ({
-            ...prev,
-            [field]: value
-        }));
+        setDetail((prev) => {
+            const next = {
+                ...prev,
+                [field]: value
+            };
+
+            if (selectedId) {
+                setPositions((prevPositions) =>
+                    prevPositions.map((position) =>
+                        position.positionId === selectedId
+                            ? {
+                                ...position,
+                                positionName: next.positionName,
+                                positionLevel: next.positionLevel,
+                                useYn: next.useYn
+                            }
+                            : position
+                    )
+                );
+            }
+
+            return next;
+        });
     };
 
     const resetDetailForm = () => {
         setSelectedId(null);
-        setDetail({
-            positionId: "",
-            positionName: "",
-            positionLevel: "",
-            useYn: "Y"
-        });
+        setIsNew(false);
+        setDetail(EMPTY_DETAIL);
+        setOriginalDetail(EMPTY_DETAIL);
     };
 
     const fetchPositions = (
         page = 0,
         pageSize = size,
         searchParams = search,
-        sortParams = sort
+        sortParams = sort,
+        focusPositionId = null
     ) => {
         const params = {
             positionName: searchParams.positionName || undefined,
@@ -250,15 +326,31 @@ const PositionList = () => {
             size: pageSize,
             sortField: sortParams.field,
             sortDirection: sortParams.direction
-        }
+        };
 
         setLoading(true);
 
         return getPositions(params)
             .then((res) => {
-                setPositions(res.data.content);
+                const content = res.data.content || [];
+
+                setPositions(content);
                 setCurrentPage(res.data.page);
                 setTotalPages(res.data.totalPages);
+
+                if (content.length > 0) {
+                    const targetPosition = focusPositionId
+                        ? content.find((position) => String(position.positionId) === String(focusPositionId))
+                        : null;
+
+                    if (targetPosition) {
+                        applySelectedPosition(targetPosition);
+                    } else {
+                        applySelectedPosition(content[0]);
+                    }
+                } else {
+                    resetDetailForm();
+                }
             })
             .catch((err) => {
                 console.error(err);
@@ -317,6 +409,7 @@ const PositionList = () => {
                         handleAdd={handleAdd}
                         handleSave={handleSave}
                         handleDelete={handleDelete}
+                        disabled={isDetailDisabled}
                     />
                 </div>
 

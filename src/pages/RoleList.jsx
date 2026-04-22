@@ -1,5 +1,5 @@
 // React
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 // 외부/공통 컴포넌트
 import AppLayout from "../components/layout/AppLayout";
@@ -45,20 +45,33 @@ const RoleList = () => {
     
     const [loading, setLoading] = useState(false);
     
-    const [detail, setDetail] = useState({
+    const EMPTY_DETAIL = {
         roleId: "",
         roleName: "",
         description: ""
-    });
+    };
+    
+    const [detail, setDetail] = useState(EMPTY_DETAIL);
+    const [originalDetail, setOriginalDetail] = useState(EMPTY_DETAIL);
     
     const [selectedId, setSelectedId] = useState(null);
+    const [isNew, setIsNew] = useState(false);
     const [checkedIds, setCheckedIds] = useState([]);
     
     const { toast, showError, showSuccess, showInfo, showWarning, clearToast } = useToast();
     const { confirm, openConfirm, closeConfirm, handleConfirm } = useConfirm();
     
-    const [currentPage, setCurrentPage] = useState([]);
-    const [totalPages, setTotalPages] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+
+    const isDetailDisabled = !selectedId;
+
+    const isDirty = useMemo(() => {
+        return (
+            detail.roleName !== originalDetail.roleName ||
+            detail.description !== originalDetail.description
+        );
+    }, [detail, originalDetail]);
 
 
     // ===== Handler (이벤트/액션) =====
@@ -129,19 +142,52 @@ const RoleList = () => {
         }
     };
 
-    const handleSelectRow = (role) => {
-        setSelectedId(role.roleId);
-
-        setDetail({
+    const applySelectedRole = (role) => {
+        const nextDetail = {
             roleId: role.roleId || "",
             roleName: role.roleName || "",
             description: role.description || ""
-        });
-    }; 
+        };
+
+        setIsNew(false);
+        setSelectedId(role.roleId);
+        setDetail(nextDetail);
+        setOriginalDetail(nextDetail);
+    };
+
+    const handleSelectRow = (role) => {
+        if (selectedId && role.roleId !== selectedId && (isNew || isDirty)) {
+            showWarning("입력 중인 데이터가 있습니다. 저장 후 이동하세요.");
+            return;
+        }
+
+        applySelectedRole(role);
+    };
 
     const handleAdd = () => {
+        if (isNew || isDirty) {
+            showWarning("입력 중인 데이터가 있습니다. 저장 후 다시 시도하세요.");
+            return;
+        }
+
+        const tempRoleId = `NEW-${Date.now().toString().slice(-5)}`;
+
         setCheckedIds([]);
-        resetDetailForm();
+        setIsNew(true);
+        setSelectedId(tempRoleId);
+
+        setRoles((prev) => [
+            {
+                roleId: tempRoleId,
+                roleName: "",
+                description: ""
+            },
+            ...prev
+        ]);
+
+        setDetail(EMPTY_DETAIL);
+        setOriginalDetail(EMPTY_DETAIL);
+
         showInfo("신규 입력 상태입니다.");
     };
 
@@ -151,34 +197,35 @@ const RoleList = () => {
             return;
         }
 
-        const userData = {
+        const roleData = {
             roleName: detail.roleName,
             description: detail.description
         };
 
-        if (selectedId) {
-            updateRole(selectedId, userData)
+        if (!isNew && selectedId) {
+            const focusRoleId = selectedId;
+
+            updateRole(selectedId, roleData)
                 .then(() => {
                     showSuccess("수정 완료");
-                    fetchRoles(currentPage, size, search, sort);
+                    return fetchRoles(currentPage, size, search, sort, focusRoleId);
                 })
                 .catch((err) => {
                     console.error(err);
                     showError(err, "수정 중 오류 발생");
                 });
         } else {
-            createRole(userData)
-                .then(() => {
+            createRole(roleData)
+                .then((res) => {
                     showSuccess("등록 완료");
-                    fetchRoles(0, size, search, sort);
-                    resetDetailForm();
+                    return fetchRoles(0, size, search, sort, res.data.roleId);
                 })
                 .catch((err) => {
                     console.error(err);
                     showError(err, "등록 중 오류 발생");
                 });
         }
-    }; 
+    };
 
     const confirmDelete = (targetIds) => {
         Promise.all(targetIds.map((id) => deleteRole(id)))
@@ -198,6 +245,16 @@ const RoleList = () => {
     };
 
     const handleDelete = () => {
+        if (isNew && selectedId) {
+            setRoles((prev) =>
+                prev.filter((role) => role.roleId !== selectedId)
+            );
+
+            resetDetailForm();
+            showSuccess("신규 행이 삭제되었습니다.");
+            return;
+        }
+
         let targetIds = [];
 
         if (checkedIds.length > 0) {
@@ -216,26 +273,43 @@ const RoleList = () => {
     }; 
 
     const handleDetailChange = (field, value) => {
-        setDetail((prev) => ({
-            ...prev,
-            [field]: value
-        }));
+        setDetail((prev) => {
+            const next = {
+                ...prev,
+                [field]: value
+            };
+
+            if (selectedId) {
+                setRoles((prevRoles) =>
+                    prevRoles.map((role) =>
+                        role.roleId === selectedId
+                            ? {
+                                ...role,
+                                roleName: next.roleName,
+                                description: next.description
+                            }
+                            : role
+                    )
+                );
+            }
+
+            return next;
+        });
     };
 
     const resetDetailForm = () => {
         setSelectedId(null);
-        setDetail({
-            roleId: "",
-            roleName: "",
-            description: ""
-        });
+        setIsNew(false);
+        setDetail(EMPTY_DETAIL);
+        setOriginalDetail(EMPTY_DETAIL);
     };
 
     const fetchRoles = (
         page = 0,
         pageSize = size,
         searchParams = search,
-        sortParams = sort
+        sortParams = sort,
+        focusRoleId = null
     ) => {
         const params = {
             roleName: searchParams.roleName || undefined,
@@ -243,15 +317,31 @@ const RoleList = () => {
             size: pageSize,
             sortField: sortParams.field,
             sortDirection: sortParams.direction
-        }
+        };
 
         setLoading(true);
 
         return getRoles(params)
             .then((res) => {
-                setRoles(res.data.content);
+                const content = res.data.content || [];
+
+                setRoles(content);
                 setCurrentPage(res.data.page);
                 setTotalPages(res.data.totalPages);
+
+                if (content.length > 0) {
+                    const targetRole = focusRoleId
+                        ? content.find((role) => String(role.roleId) === String(focusRoleId))
+                        : null;
+
+                    if (targetRole) {
+                        applySelectedRole(targetRole);
+                    } else {
+                        applySelectedRole(content[0]);
+                    }
+                } else {
+                    resetDetailForm();
+                }
             })
             .catch((err) => {
                 console.error(err);
@@ -310,6 +400,7 @@ const RoleList = () => {
                         handleAdd={handleAdd}
                         handleSave={handleSave}
                         handleDelete={handleDelete}
+                        disabled={isDetailDisabled}
                     />
                 </div>
 

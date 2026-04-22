@@ -3,10 +3,11 @@ const UserDetailForm = ({
     onChangeDetail,
     handleAdd,
     handleSave,
-    handleDelete
+    handleDelete,
+    disabled
 }) => {
     return (
-        <div className="detail-box section-card">
+        <div className={`detail-box section-card ${disabled ? "disabled" : ""}`}>
             <div className="section-header">
                 <h3 className="section-title">상세 정보</h3>
 
@@ -22,6 +23,7 @@ const UserDetailForm = ({
                     <button
                         className="button button-primary"
                         type="button"
+                        disabled={disabled}
                         onClick={handleSave}
                     >
                         저장
@@ -30,6 +32,7 @@ const UserDetailForm = ({
                     <button
                         className="button button-delete"
                         type="button"
+                        disabled={disabled}
                         onClick={handleDelete}
                     >
                         삭제
@@ -54,6 +57,7 @@ const UserDetailForm = ({
                         className="form-input"
                         type="text"
                         value={detail.positionName}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("positionName", e.target.value)}
                     />
                 </div>
@@ -64,6 +68,7 @@ const UserDetailForm = ({
                         className="form-input"
                         type="text"
                         value={detail.positionLevel}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("positionLevel", e.target.value)}
                     />
                 </div>
@@ -73,6 +78,7 @@ const UserDetailForm = ({
                     <select
                         className="form-select"
                         value={detail.useYn || ""}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("useYn", e.target.value)}
                     >
                         <option value="">선택</option>

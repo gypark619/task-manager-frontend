@@ -4,10 +4,11 @@ const TeamDetailForm = ({
     handleAdd,
     handleSave,
     handleDelete,
-    handleSearchLeader
+    handleSearchLeader,
+    disabled
 }) => {
     return (
-        <div className="detail-box section-card">
+        <div className={`detail-box section-card ${disabled ? "disabled" : ""}`}>
             <div className="section-header">
                 <h3 className="section-title">상세 정보</h3>
 
@@ -23,6 +24,7 @@ const TeamDetailForm = ({
                     <button
                         className="button button-primary"
                         type="button"
+                        disabled={disabled}
                         onClick={handleSave}
                     >
                         저장
@@ -31,6 +33,7 @@ const TeamDetailForm = ({
                     <button
                         className="button button-delete"
                         type="button"
+                        disabled={disabled}
                         onClick={handleDelete}
                     >
                         삭제
@@ -55,6 +58,7 @@ const TeamDetailForm = ({
                         className="form-input"
                         type="text"
                         value={detail.teamName}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("teamName", e.target.value)}
                     />
                 </div>
@@ -64,6 +68,7 @@ const TeamDetailForm = ({
                     <input
                         className="form-input"
                         value={detail.teamLeaderEmployeeNo || ""}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("teamLeaderEmployeeNo", e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
@@ -76,6 +81,7 @@ const TeamDetailForm = ({
                     <input
                         className="form-input"
                         value={detail.teamLeaderName || ""}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("teamLeaderName", e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
@@ -87,6 +93,7 @@ const TeamDetailForm = ({
                     <button 
                         className="button"
                         type="button"
+                        disabled={disabled}
                         onClick={handleSearchLeader}
                     >
                         선택
@@ -98,6 +105,7 @@ const TeamDetailForm = ({
                     <select
                         className="form-select"
                         value={detail.useYn || ""}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("useYn", e.target.value)}
                     >
                         <option value="">선택</option>
@@ -112,6 +120,7 @@ const TeamDetailForm = ({
                         className="form-input"
                         type="text"
                         value={detail.description}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("description", e.target.value)}
                     />
                 </div>

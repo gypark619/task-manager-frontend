@@ -1,5 +1,5 @@
 // React
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 // 외부/공통 컴포넌트
 import AppLayout from "../components/layout/AppLayout";
@@ -21,7 +21,7 @@ import { getPositions } from "../api/positionApi";
 import { getRoles } from "../api/roleApi";
 
 // constants
-import { EMAIL_DOMAIN_OPTIONS } from "../constants/optionUtils";
+import { EMAIL_DOMAIN_OPTIONS, STATUS_OPTIONS } from "../constants/optionUtils";
 
 // hooks
 import useToast from "../hooks/useToast";
@@ -59,7 +59,7 @@ const UserList = () => {
 
     const [loading, setLoading] = useState(false);
 
-    const [detail, setDetail] = useState({
+    const EMPTY_DETAIL = {
         userId: "",
         employeeNo: "",
         loginId: "",
@@ -71,11 +71,15 @@ const UserList = () => {
         teamId: "",
         positionId: "",
         status: "ACTIVE"
-    });
+    };
+
+    const [detail, setDetail] = useState(EMPTY_DETAIL);
+    const [originalDetail, setOriginalDetail] = useState(EMPTY_DETAIL);
 
     const [emailDomainType, setEmailDomainType] = useState("direct");
 
     const [selectedId, setSelectedId] = useState(null);
+    const [isNew, setIsNew] = useState(false);
     const [checkedIds, setCheckedIds] = useState([]);
 
     const { toast, showError, showSuccess, showInfo, showWarning, clearToast } = useToast();
@@ -84,6 +88,131 @@ const UserList = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
 
+    const isDetailDisabled = !selectedId;
+
+    const isDirty = useMemo(() => {
+        return (
+            detail.employeeNo !== originalDetail.employeeNo ||
+            detail.loginId !== originalDetail.loginId ||
+            detail.name !== originalDetail.name ||
+            detail.emailId !== originalDetail.emailId ||
+            detail.emailDomain !== originalDetail.emailDomain ||
+            detail.phone !== originalDetail.phone ||
+            detail.officePhone !== originalDetail.officePhone ||
+            String(detail.teamId || "") !== String(originalDetail.teamId || "") ||
+            String(detail.positionId || "") !== String(originalDetail.positionId || "") ||
+            detail.status !== originalDetail.status
+        );
+    }, [detail, originalDetail]);
+
+    const statusLabelMap = useMemo(() => {
+        return STATUS_OPTIONS.reduce((acc, option) => {
+            acc[option.value] = option.label;
+            return acc;
+        }, {});
+    }, []);
+
+    const teamNameMap = useMemo(() => {
+        return teams.reduce((acc, team) => {
+            acc[String(team.teamId)] = team.teamName;
+            return acc;
+        }, {});
+    }, [teams]);
+
+    const positionNameMap = useMemo(() => {
+        return positions.reduce((acc, position) => {
+            acc[String(position.positionId)] = position.positionName;
+            return acc;
+        }, {});
+    }, [positions]);
+
+    // ===== 공통 함수 =====
+    const enrichUserRow = (user) => {
+        return {
+            ...user,
+            teamName: teamNameMap[String(user.teamId)] || user.teamName || "",
+            positionName: positionNameMap[String(user.positionId)] || user.positionName || "",
+            statusName: statusLabelMap[user.status] || ""
+        };
+    };
+
+    const applySelectedUser = (user) => {
+        const email = user.email || "";
+        const [emailId, ...domainParts] = email.split("@");
+
+        const nextDetail = {
+            userId: user.userId || "",
+            employeeNo: user.employeeNo || "",
+            loginId: user.loginId || "",
+            name: user.name || "",
+            emailId: emailId || "",
+            emailDomain: domainParts.join("@") || "",
+            phone: user.phone || "",
+            officePhone: user.officePhone || "",
+            teamId: user.teamId || "",
+            positionId: user.positionId || "",
+            status: user.status || "ACTIVE"
+        };
+
+        const matched = EMAIL_DOMAIN_OPTIONS.find(
+            (opt) => opt.value !== "direct" && opt.value === nextDetail.emailDomain
+        );
+
+        setIsNew(false);
+        setSelectedId(user.userId);
+        setDetail(nextDetail);
+        setOriginalDetail(nextDetail);
+        setEmailDomainType(matched ? nextDetail.emailDomain : "direct");
+    };
+
+    const loadUserRoles = (userId) => {
+        return getUserRoles(userId).then((res) => {
+            setSelectedRoleIds(res.data.map(String));
+        });
+    };
+
+    const createEmptyUserRow = (tempUserId) => ({
+        userId: tempUserId,
+        employeeNo: "",
+        loginId: "",
+        name: "",
+        teamName: "",
+        positionName: "",
+        statusName: statusLabelMap.ACTIVE || "",
+        email: "",
+        phone: "",
+        officePhone: "",
+        teamId: "",
+        positionId: "",
+        status: "ACTIVE"
+    });
+
+    const updateUserRow = (next) => {
+        setUsers((prevUsers) =>
+            prevUsers.map((user) =>
+                user.userId === selectedId
+                    ? {
+                        ...user,
+                        employeeNo: next.employeeNo,
+                        loginId: next.loginId,
+                        name: next.name,
+                        phone: next.phone,
+                        officePhone: next.officePhone,
+                        teamId: next.teamId,
+                        positionId: next.positionId,
+                        status: next.status,
+                        email:
+                            next.emailId || next.emailDomain
+                                ? `${next.emailId}${next.emailDomain ? `@${next.emailDomain}` : ""}`
+                                : "",
+                        teamName: teamNameMap[String(next.teamId)] || "",
+                        positionName: positionNameMap[String(next.positionId)] || "",
+                        statusName: statusLabelMap[next.status] || ""
+                    }
+                    : user
+            )
+        );
+    };
 
     // ===== Handler (이벤트/액션) =====
     const handleSearchChange = (field, value) => {
@@ -157,40 +286,34 @@ const UserList = () => {
     };
 
     const handleSelectRow = (user) => {
-        setSelectedId(user.userId);
+        if (selectedId && user.userId !== selectedId && (isNew || isDirty)) {
+            showWarning("입력 중인 데이터가 있습니다. 저장 후 이동하세요.");
+            return;
+        }
 
-        const email = user.email || "";
-        const [emailId, ...domainParts] = email.split("@");
-
-        setDetail({
-            userId: user.userId || "",
-            employeeNo: user.employeeNo || "",
-            loginId: user.loginId || "",
-            name: user.name || "",
-            emailId: emailId || "",
-            emailDomain: domainParts.join("@") || "",
-            phone: user.phone || "",
-            officePhone: user.officePhone || "",
-            teamId: user.teamId || "",
-            positionId: user.positionId || "",
-            status: user.status || "ACTIVE"
-        });
-
-        const domain = domainParts.join("@");
-        const matched = EMAIL_DOMAIN_OPTIONS.find(
-            (opt) => opt.value !== "direct" && opt.value === domain
-        );
-
-        setEmailDomainType(matched ? domain : "direct");
-
-        getUserRoles(user.userId).then(res => {
-            setSelectedRoleIds(res.data.map(String));
-        });
+        applySelectedUser(user);
+        loadUserRoles(user.userId);
     };
 
     const handleAdd = () => {
+        if (isNew || isDirty) {
+            showWarning("입력 중인 데이터가 있습니다. 저장 후 다시 시도하세요.");
+            return;
+        }
+
+        const tempUserId = `NEW-${Date.now().toString().slice(-5)}`;
+
         setCheckedIds([]);
-        resetDetailForm();
+        setIsNew(true);
+        setSelectedId(tempUserId);
+
+        setUsers((prev) => [createEmptyUserRow(tempUserId), ...prev]);
+
+        setDetail(EMPTY_DETAIL);
+        setOriginalDetail(EMPTY_DETAIL);
+        setSelectedRoleIds([]);
+        setEmailDomainType("direct");
+
         showInfo("신규 입력 상태입니다.");
     };
 
@@ -215,7 +338,7 @@ const UserList = () => {
 
         const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
         return emailRegex.test(email);
-    }
+    };
 
     const handleSave = () => {
         if (!detail.employeeNo || !detail.loginId || !detail.name) {
@@ -253,12 +376,14 @@ const UserList = () => {
             status: detail.status
         };
 
-        if (selectedId) {
+        if (!isNew && selectedId) {
+            const focusUserId = selectedId;
+
             updateUser(selectedId, userData)
                 .then(() => handleSaveUserRoles(selectedId, selectedRoleIds))
                 .then(() => {
                     showSuccess("수정 완료");
-                    fetchUsers(currentPage, size, search, sort);
+                    return fetchUsers(currentPage, size, search, sort, focusUserId);
                 })
                 .catch((err) => {
                     console.error(err);
@@ -268,12 +393,16 @@ const UserList = () => {
                     showError(message);
                 });
         } else {
+            let createdUserId = null;
+
             createUser(userData)
-                .then((res) => handleSaveUserRoles(res.data.userId, selectedRoleIds))
+                .then((res) => {
+                    createdUserId = res.data.userId;
+                    return handleSaveUserRoles(createdUserId, selectedRoleIds);
+                })
                 .then(() => {
                     showSuccess("등록 완료");
-                    fetchUsers(0, size, search, sort);
-                    resetDetailForm();
+                    return fetchUsers(0, size, search, sort, createdUserId);
                 })
                 .catch((err) => {
                     console.error(err);
@@ -290,11 +419,7 @@ const UserList = () => {
             .then(() => {
                 showSuccess("삭제 완료");
                 setCheckedIds([]);
-                fetchUsers(currentPage, size, search, sort);
-
-                if (selectedId && targetIds.includes(selectedId)) {
-                    resetDetailForm();
-                }
+                return fetchUsers(currentPage, size, search, sort);
             })
             .catch((err) => {
                 console.error(err);
@@ -303,6 +428,16 @@ const UserList = () => {
     };
 
     const handleDelete = () => {
+        if (isNew && selectedId) {
+            setUsers((prev) =>
+                prev.filter((user) => user.userId !== selectedId)
+            );
+
+            resetDetailForm();
+            showSuccess("신규 행이 삭제되었습니다.");
+            return;
+        }
+
         let targetIds = [];
 
         if (checkedIds.length > 0) {
@@ -321,10 +456,18 @@ const UserList = () => {
     };
 
     const handleDetailChange = (field, value) => {
-        setDetail((prev) => ({
-            ...prev,
-            [field]: value
-        }));
+        setDetail((prev) => {
+            const next = {
+                ...prev,
+                [field]: value
+            };
+
+            if (selectedId) {
+                updateUserRow(next);
+            }
+
+            return next;
+        });
     };
 
     const handleEmailIdChange = (value) => {
@@ -345,19 +488,9 @@ const UserList = () => {
 
     const resetDetailForm = () => {
         setSelectedId(null);
-        setDetail({
-            userId: "",
-            employeeNo: "",
-            loginId: "",
-            name: "",
-            emailId: "",
-            emailDomain: "",
-            phone: "",
-            officePhone: "",
-            teamId: "",
-            positionId: "",
-            status: "ACTIVE"
-        });
+        setIsNew(false);
+        setDetail(EMPTY_DETAIL);
+        setOriginalDetail(EMPTY_DETAIL);
         setSelectedRoleIds([]);
         setEmailDomainType("direct");
     };
@@ -366,7 +499,8 @@ const UserList = () => {
         page = 0, 
         pageSize = size, 
         searchParams = search, 
-        sortParams = sort
+        sortParams = sort,
+        focusUserId = null
     ) => {
         const params = {
             name: searchParams.name || undefined,
@@ -383,9 +517,27 @@ const UserList = () => {
 
         return getUsers(params)
             .then((res) => {
-                setUsers(res.data.content);
+                const content = (res.data.content || []).map((user) => enrichUserRow(user));
+
+                setUsers(content);
                 setCurrentPage(res.data.page);
                 setTotalPages(res.data.totalPages);
+
+                if (content.length > 0) {
+                    const targetUser = focusUserId
+                        ? content.find((user) => String(user.userId) === String(focusUserId))
+                        : null;
+
+                    if (targetUser) {
+                        applySelectedUser(targetUser);
+                        return loadUserRoles(targetUser.userId);
+                    } else {
+                        applySelectedUser(content[0]);
+                        return loadUserRoles(content[0].userId);
+                    }
+                } else {
+                    resetDetailForm();
+                }
             })
             .catch((err) => {
                 console.error(err);
@@ -417,8 +569,8 @@ const UserList = () => {
         return getPositions({
             page: 0,
             size: 100,
-            sortField: "positionName",
-            sortDirection: "asc"
+            sortField: "positionLevel",
+            sortDirection: "desc"
         })
             .then((res) => {
                 setPositions(res.data.content);
@@ -522,6 +674,7 @@ const UserList = () => {
                         onChangeEmailId={handleEmailIdChange}
                         onChangeEmailDomain={handleEmailDomainChange}
                         onChangeEmailDomainType={handleEmailDomainTypeChange}
+                        disabled={isDetailDisabled}
                     />
                 </div>
 

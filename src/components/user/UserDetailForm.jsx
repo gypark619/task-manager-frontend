@@ -18,12 +18,13 @@ const UserDetailForm = ({
     emailDomainOptions = [],
     onChangeEmailId,
     onChangeEmailDomain,
-    onChangeEmailDomainType
+    onChangeEmailDomainType,
+    disabled
 }) => {
     const isDirectInput = emailDomainType === "direct";
     
     return (
-        <div className="detail-box section-card">
+        <div className={`detail-box section-card ${disabled ? "disabled" : ""}`}>
             <div className="section-header">
                 <h3 className="section-title">상세 정보</h3>
 
@@ -39,6 +40,7 @@ const UserDetailForm = ({
                     <button
                         className="button button-primary"
                         type="button"
+                        disabled={disabled}
                         onClick={handleSave}
                     >
                         저장
@@ -47,6 +49,7 @@ const UserDetailForm = ({
                     <button
                         className="button button-delete"
                         type="button"
+                        disabled={disabled}
                         onClick={handleDelete}
                     >
                         삭제
@@ -71,6 +74,7 @@ const UserDetailForm = ({
                         className="form-input"
                         type="text"
                         value={detail.employeeNo}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("employeeNo", e.target.value)}
                     />
                 </div>
@@ -81,6 +85,7 @@ const UserDetailForm = ({
                         className="form-input"
                         type="text"
                         value={detail.loginId}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("loginId", e.target.value)}
                     />
                 </div>
@@ -91,6 +96,7 @@ const UserDetailForm = ({
                         className="form-input"
                         type="text"
                         value={detail.name}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("name", e.target.value)}
                     />
                 </div>
@@ -103,6 +109,7 @@ const UserDetailForm = ({
                             className="form-input email-id-input"
                             type="text"
                             value={detail.emailId}
+                            disabled={disabled}
                             onKeyDown={(e) => {
                                 if (e.key === "@") e.preventDefault();
                             }}
@@ -125,12 +132,13 @@ const UserDetailForm = ({
                                 onChangeEmailDomain(e.target.value.replace(/@/g, ""))
                             }
                             placeholder="주소"
-                            disabled={!isDirectInput}
+                            disabled={disabled || !isDirectInput}
                         />
 
                         <select
                             className="form-select email-domain-select"
                             value={emailDomainType}
+                            disabled={disabled}
                             onChange={(e) => onChangeEmailDomainType(e.target.value)}
                         >
                             {emailDomainOptions.map((option) => (
@@ -148,6 +156,7 @@ const UserDetailForm = ({
                         className="form-input"
                         type="text"
                         value={detail.phone}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("phone", e.target.value)}
                     />
                 </div>
@@ -158,6 +167,7 @@ const UserDetailForm = ({
                         className="form-input"
                         type="text"
                         value={detail.officePhone}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("officePhone", e.target.value)}
                     />
                 </div>
@@ -167,6 +177,7 @@ const UserDetailForm = ({
                     <select
                         className="form-select"
                         value={detail.teamId || ""}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("teamId", e.target.value)}
                     >
                         {withEmptyOption(teamOptions, "선택").map((option) => (
@@ -182,6 +193,7 @@ const UserDetailForm = ({
                     <select
                         className="form-select"
                         value={detail.positionId || ""}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("positionId", e.target.value)}
                     >
                         {withEmptyOption(positionOptions, "선택").map((option) => (
@@ -197,6 +209,7 @@ const UserDetailForm = ({
                     <select
                         className="form-select"
                         value={detail.status || ""}
+                        disabled={disabled}
                         onChange={(e) => onChangeDetail("status", e.target.value)}
                     >
                         {withEmptyOption(STATUS_OPTIONS, "선택").map((option) => (
@@ -215,8 +228,9 @@ const UserDetailForm = ({
                                 <input
                                     type="checkbox"
                                     checked={selectedRoleIds.includes(role.value)}
+                                    disabled={disabled}
                                     onChange={(e) => handleRoleCheck(role.value, e.target.checked)}
-                                    />
+                                />
                                 {role.label}
                             </label>
                         ))}
