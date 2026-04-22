@@ -17,11 +17,11 @@ import UserSelectModal from "../components/common/UserSelectModal";
 
 // API
 import { getTeams, createTeam, updateTeam, deleteTeam } from "../api/teamApi";
-import { getUsers } from "../api/userApi";
 
 // hooks
 import useToast from "../hooks/useToast";
 import useConfirm from "../hooks/useConfirm";
+import useUserSelectModal from "../hooks/useUserSelectModal";
 
 // styles
 import "../styles/layout.css";
@@ -67,7 +67,24 @@ const TeamList = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
 
-    const [modalOpen, setModalOpen] = useState(false);
+    const { modalOpen, initialSearch, openWithSearch, closeModal, handleSelect } =
+        useUserSelectModal({
+            onSelect: (user) => {
+                setDetail((prev) => ({
+                    ...prev,
+                    teamLeaderId: user.userId,
+                    teamLeaderEmployeeNo: user.employeeNo,
+                    teamLeaderName: user.name
+                }));
+            },
+            onError: () => {
+                showError("사용자 조회 중 오류 발생");
+            },
+            onEmpty: () => {
+                showInfo("조회된 사용자가 없습니다.");
+            }
+        });
+
 
     // ===== Handler (이벤트/액션) =====
     const handleSearchChange = (field, value) => {
@@ -252,29 +269,10 @@ const TeamList = () => {
     };
 
     const handleSearchLeader = () => {
-        const params = {
+        openWithSearch({
             employeeNo: detail.teamLeaderEmployeeNo || "",
             name: detail.teamLeaderName || "",
-            teamId: detail.teamId || "",
-            page: 0,
-            size: 10
-        };
-
-        getUsers(params).then((res) => {
-            const users = res.data.content || [];
-
-            if (users.length === 1) {
-                const user = users[0];
-                setDetail((prev) => ({
-                    ...prev,
-                    teamLeaderId: user.userId,
-                    teamLeaderEmployeeNo: user.employeeNo,
-                    teamLeaderName: user.name
-                }));
-                return;
-            }
-
-            setModalOpen(true);
+            teamId: detail.teamId || ""
         });
     };
 
@@ -375,26 +373,13 @@ const TeamList = () => {
                     onConfirm={handleConfirm}
                 />
 
-                {modalOpen && (
-                    <UserSelectModal
-                        title="부서장 선택"
-                        initialSearch={{
-                            teamId: detail.teamId || "",
-                            employeeNo: detail.teamLeaderEmployeeNo || "",
-                            name: detail.teamLeaderName || ""
-                        }}
-                        onClose={() => setModalOpen(false)}
-                        onSelect={(user) => {
-                            setDetail((prev) => ({
-                                ...prev,
-                                teamLeaderId: user.userId,
-                                teamLeaderEmployeeNo: user.employeeNo,
-                                teamLeaderName: user.name
-                            }));
-                            setModalOpen(false);
-                        }}
-                    />
-                )}
+                <UserSelectModal
+                    title="부서장 선택"
+                    open={modalOpen}
+                    initialSearch={initialSearch}
+                    onClose={closeModal}
+                    onSelect={handleSelect}
+                />
             </div>
         </AppLayout>
     );

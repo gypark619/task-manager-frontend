@@ -8,7 +8,13 @@ import {
     withEmptyOption
 } from "../../constants/optionUtils";
 
-function UserSelectModal({ title = "사용자 선택", initialSearch, onClose, onSelect }) {
+const UserSelectModal = ({
+    title = "사용자 선택",
+    open,
+    initialSearch,
+    onClose,
+    onSelect
+}) => {
     const [users, setUsers] = useState([]);
     const [teams, setTeams] = useState([]);
 
@@ -34,6 +40,8 @@ function UserSelectModal({ title = "사용자 선택", initialSearch, onClose, o
     };
 
     useEffect(() => {
+        if (!open) return;
+
         const nextSearch = {
             employeeNo: initialSearch?.employeeNo || "",
             name: initialSearch?.name || "",
@@ -42,21 +50,23 @@ function UserSelectModal({ title = "사용자 선택", initialSearch, onClose, o
 
         setSearch(nextSearch);
 
-        getUsers({ ...nextSearch, page: 0, size: 10 }).then(res => {
+        getUsers({ ...nextSearch, page: 0, size: 10 }).then((res) => {
             setUsers(res.data.content);
             setPage(res.data.page);
             setTotalPages(res.data.totalPages);
         });
 
-        getTeams({ size: 1000 }).then(res => {
+        getTeams({ size: 1000 }).then((res) => {
             setTeams(res.data.content);
         });
-    }, [initialSearch]);
+    }, [open, initialSearch]);
 
     const teamOptions = teams.map(team => ({
         value: String(team.teamId),
         label: team.teamName
     }));
+
+    if (!open) return null;
 
     return (
         <div className="modal-overlay">
