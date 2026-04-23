@@ -1,10 +1,17 @@
 /* ===== 페이지 ===== */
 .page {
     display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto 220px;
     gap: 15px;
     width: 100%;
+    height: calc(100vh - 155px);
     margin: 0;
     box-sizing: border-box;
+    min-height: 0;
+}
+
+.section {
+    min-height: 0;
 }
 
 /* ===== 공통 박스 ===== */
@@ -15,6 +22,29 @@
     border: 1px solid #e9edf3;
     border-radius: 8px;
     background-color: #fff;
+    box-sizing: border-box;
+}
+
+.search-box {
+    height: auto;
+}
+
+.table-box,
+.detail-box {
+    height: 100%;
+    min-height: 0;
+}
+
+/* ===== 목록/상세 공통 구조 ===== */
+.table-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.detail-box {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .section-header,
@@ -23,6 +53,7 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    flex-shrink: 0;
 }
 
 .section-title,

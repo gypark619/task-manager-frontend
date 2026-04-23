@@ -1,9 +1,6 @@
 // React
 import { useEffect, useMemo, useState } from "react";
 
-// 외부/공통 컴포넌트
-import AppLayout from "../components/layout/AppLayout";
-
 // 페이지 전용 컴포넌트
 import RoleSearch from "../components/role/RoleSearch";
 import RoleTable from "../components/role/RoleTable";
@@ -360,64 +357,62 @@ const RoleList = () => {
     }, [currentPage, size, sort]);
 
     return (
-        <AppLayout title="권한 관리">
-            <div className="page">
-                <div className="section">
-                    <RoleSearch
-                        search={search}
-                        onChangeSearch={handleSearchChange}
-                        handleSearch={handleSearch}
-                        handleReset={handleReset}
-                        loading={loading}
-                    />
-                </div>
-
-                <div className="section">
-                    <RoleTable
-                        roles={roles}
-                        checkedIds={checkedIds}
-                        selectedId={selectedId}
-                        handleCheck={handleCheck}
-                        handleCheckAll={handleCheckAll}
-                        handleSelect={handleSelectRow}
-                        sort={sort}
-                        onChangeSort={handleSortChange}
-                        size={size}
-                        onChangeSize={handleSizeChange}
-                    />
-                </div>
-
-                <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onChangePage={(page) => fetchRoles(page, size, search, sort)}
-                />
-
-                <div className="section">
-                    <RoleDetailForm
-                        detail={detail}
-                        onChangeDetail={handleDetailChange}
-                        handleAdd={handleAdd}
-                        handleSave={handleSave}
-                        handleDelete={handleDelete}
-                        disabled={isDetailDisabled}
-                    />
-                </div>
-
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={clearToast}
-                />
-
-                <ConfirmModal
-                    open={confirm.open}
-                    message={confirm.message}
-                    onCancel={closeConfirm}
-                    onConfirm={handleConfirm}
+        <div className="page">
+            <div className="section">
+                <RoleSearch
+                    search={search}
+                    onChangeSearch={handleSearchChange}
+                    handleSearch={handleSearch}
+                    handleReset={handleReset}
+                    loading={loading}
                 />
             </div>
-        </AppLayout>
+
+            <div className="section">
+                <RoleTable
+                    roles={roles}
+                    checkedIds={checkedIds}
+                    selectedId={selectedId}
+                    handleCheck={handleCheck}
+                    handleCheckAll={handleCheckAll}
+                    handleSelect={handleSelectRow}
+                    sort={sort}
+                    onChangeSort={handleSortChange}
+                    size={size}
+                    onChangeSize={handleSizeChange}
+                />
+            </div>
+
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onChangePage={(page) => fetchRoles(page, size, search, sort)}
+            />
+
+            <div className="section">
+                <RoleDetailForm
+                    detail={detail}
+                    onChangeDetail={handleDetailChange}
+                    handleAdd={handleAdd}
+                    handleSave={handleSave}
+                    handleDelete={handleDelete}
+                    disabled={isDetailDisabled}
+                />
+            </div>
+
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                onClose={clearToast}
+            />
+
+            <ConfirmModal
+                open={confirm.open}
+                message={confirm.message}
+                onCancel={closeConfirm}
+                onConfirm={handleConfirm}
+            />
+        </div>
     );
 };
 

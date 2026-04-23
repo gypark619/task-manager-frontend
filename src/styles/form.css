@@ -9,7 +9,7 @@
 
 .form-input,
 .form-select {
-    height: 32px;
+    height: 28px;
     padding: 0 8px;
     box-sizing: border-box;
     border: 1px solid #d9dee5;
@@ -98,14 +98,19 @@
 .detail-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px 20px;
+    gap: 20px 20px;
     align-items: start;
+    align-content: start;
+    min-height: 0;
+    overflow: auto;
+    padding-right: 4px;
 }
 
 .detail-field {
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
 }
 
 .detail-field.detail-col-4 { grid-column: span 4; }
@@ -116,6 +121,7 @@
 .detail-field .form-input,
 .detail-field .form-select {
     width: 100%;
+    min-width: 0;
 }
 
 .detail-field-inline {

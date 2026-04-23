@@ -1,9 +1,6 @@
 // React
 import { useEffect, useMemo, useState } from "react";
 
-// 외부/공통 컴포넌트
-import AppLayout from "../components/layout/AppLayout";
-
 // 페이지 전용 컴포넌트
 import TeamSearch from "../components/team/TeamSearch";
 import TeamTable from "../components/team/TeamTable";
@@ -414,73 +411,71 @@ const TeamList = () => {
     }, [currentPage, size, sort]);
 
     return (
-        <AppLayout title="부서 관리">
-            <div className="page">
-                <div className="section">
-                    <TeamSearch
-                        search={search}
-                        onChangeSearch={handleSearchChange}
-                        handleSearch={handleSearch}
-                        handleReset={handleReset}
-                        loading={loading}
-                    />
-                </div>
-
-                <div className="section">
-                    <TeamTable
-                        teams={teams}
-                        checkedIds={checkedIds}
-                        selectedId={selectedId}
-                        handleCheck={handleCheck}
-                        handleCheckAll={handleCheckAll}
-                        handleSelect={handleSelectRow}
-                        sort={sort}
-                        onChangeSort={handleSortChange}
-                        size={size}
-                        onChangeSize={handleSizeChange}
-                    />
-                </div>
-
-                <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onChangePage={(page) => fetchTeams(page, size, search, sort)}
-                />
-
-                <div className="section">
-                    <TeamDetailForm
-                        detail={detail}
-                        onChangeDetail={handleDetailChange}
-                        handleAdd={handleAdd}
-                        handleSave={handleSave}
-                        handleDelete={handleDelete}
-                        handleSearchLeader={handleSearchLeader}
-                        disabled={isDetailDisabled}
-                    />
-                </div>
-
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={clearToast}
-                />
-
-                <ConfirmModal
-                    open={confirm.open}
-                    message={confirm.message}
-                    onCancel={closeConfirm}
-                    onConfirm={handleConfirm}
-                />
-
-                <UserSelectModal
-                    title="부서장 선택"
-                    open={modalOpen}
-                    initialSearch={initialSearch}
-                    onClose={closeModal}
-                    onSelect={handleSelect}
+        <div className="page">
+            <div className="section">
+                <TeamSearch
+                    search={search}
+                    onChangeSearch={handleSearchChange}
+                    handleSearch={handleSearch}
+                    handleReset={handleReset}
+                    loading={loading}
                 />
             </div>
-        </AppLayout>
+
+            <div className="section">
+                <TeamTable
+                    teams={teams}
+                    checkedIds={checkedIds}
+                    selectedId={selectedId}
+                    handleCheck={handleCheck}
+                    handleCheckAll={handleCheckAll}
+                    handleSelect={handleSelectRow}
+                    sort={sort}
+                    onChangeSort={handleSortChange}
+                    size={size}
+                    onChangeSize={handleSizeChange}
+                />
+            </div>
+
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onChangePage={(page) => fetchTeams(page, size, search, sort)}
+            />
+
+            <div className="section">
+                <TeamDetailForm
+                    detail={detail}
+                    onChangeDetail={handleDetailChange}
+                    handleAdd={handleAdd}
+                    handleSave={handleSave}
+                    handleDelete={handleDelete}
+                    handleSearchLeader={handleSearchLeader}
+                    disabled={isDetailDisabled}
+                />
+            </div>
+
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                onClose={clearToast}
+            />
+
+            <ConfirmModal
+                open={confirm.open}
+                message={confirm.message}
+                onCancel={closeConfirm}
+                onConfirm={handleConfirm}
+            />
+
+            <UserSelectModal
+                title="부서장 선택"
+                open={modalOpen}
+                initialSearch={initialSearch}
+                onClose={closeModal}
+                onSelect={handleSelect}
+            />
+        </div>
     );
 };
 

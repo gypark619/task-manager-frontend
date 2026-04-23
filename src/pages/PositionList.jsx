@@ -1,9 +1,6 @@
 // React
 import { useEffect, useMemo, useState } from "react";
 
-// 외부/공통 컴포넌트
-import AppLayout from "../components/layout/AppLayout";
-
 // 페이지 전용 컴포넌트
 import PositionSearch from "../components/position/PositionSearch";
 import PositionTable from "../components/position/PositionTable";
@@ -369,64 +366,62 @@ const PositionList = () => {
     }, [currentPage, size, sort]);
 
     return (
-        <AppLayout title="직급 관리">
-            <div className="page">
-                <div className="section">
-                    <PositionSearch
-                        search={search}
-                        onChangeSearch={handleSearchChange}
-                        handleSearch={handleSearch}
-                        handleReset={handleReset}
-                        loading={loading}
-                    />
-                </div>
-
-                <div className="section">
-                    <PositionTable
-                        positions={positions}
-                        checkedIds={checkedIds}
-                        selectedId={selectedId}
-                        handleCheck={handleCheck}
-                        handleCheckAll={handleCheckAll}
-                        handleSelect={handleSelectRow}
-                        sort={sort}
-                        onChangeSort={handleSortChange}
-                        size={size}
-                        onChangeSize={handleSizeChange}
-                    />
-                </div>
-
-                <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onChangePage={(page) => fetchPositions(page, size, search, sort)}
-                />
-
-                <div className="section">
-                    <PositionDetailForm
-                        detail={detail}
-                        onChangeDetail={handleDetailChange}
-                        handleAdd={handleAdd}
-                        handleSave={handleSave}
-                        handleDelete={handleDelete}
-                        disabled={isDetailDisabled}
-                    />
-                </div>
-
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={clearToast}
-                />
-
-                <ConfirmModal
-                    open={confirm.open}
-                    message={confirm.message}
-                    onCancel={closeConfirm}
-                    onConfirm={handleConfirm}
+        <div className="page">
+            <div className="section">
+                <PositionSearch
+                    search={search}
+                    onChangeSearch={handleSearchChange}
+                    handleSearch={handleSearch}
+                    handleReset={handleReset}
+                    loading={loading}
                 />
             </div>
-        </AppLayout>
+
+            <div className="section">
+                <PositionTable
+                    positions={positions}
+                    checkedIds={checkedIds}
+                    selectedId={selectedId}
+                    handleCheck={handleCheck}
+                    handleCheckAll={handleCheckAll}
+                    handleSelect={handleSelectRow}
+                    sort={sort}
+                    onChangeSort={handleSortChange}
+                    size={size}
+                    onChangeSize={handleSizeChange}
+                />
+            </div>
+
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onChangePage={(page) => fetchPositions(page, size, search, sort)}
+            />
+
+            <div className="section">
+                <PositionDetailForm
+                    detail={detail}
+                    onChangeDetail={handleDetailChange}
+                    handleAdd={handleAdd}
+                    handleSave={handleSave}
+                    handleDelete={handleDelete}
+                    disabled={isDetailDisabled}
+                />
+            </div>
+
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                onClose={clearToast}
+            />
+
+            <ConfirmModal
+                open={confirm.open}
+                message={confirm.message}
+                onCancel={closeConfirm}
+                onConfirm={handleConfirm}
+            />
+        </div>
     );
 };
 

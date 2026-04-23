@@ -1,9 +1,6 @@
 // React
 import { useEffect, useMemo, useState } from "react";
 
-// 외부/공통 컴포넌트
-import AppLayout from "../components/layout/AppLayout";
-
 // 페이지 전용 컴포넌트
 import UserSearch from "../components/user/UserSearch";
 import UserTable from "../components/user/UserTable";
@@ -622,76 +619,74 @@ const UserList = () => {
     }));
 
     return (
-        <AppLayout title="사용자 관리">
-            <div className="page">
-                <div className="section">
-                    <UserSearch
-                        search={search}
-                        onChangeSearch={handleSearchChange}
-                        handleSearch={handleSearch}
-                        handleReset={handleReset}
-                        loading={loading}
-                        teamOptions={teamOptions}
-                        positionOptions={positionOptions}
-                    />
-                </div>
-
-                <div className="section">
-                    <UserTable
-                        users={users}
-                        checkedIds={checkedIds}
-                        selectedId={selectedId}
-                        handleCheck={handleCheck}
-                        handleCheckAll={handleCheckAll}
-                        handleSelect={handleSelectRow}
-                        sort={sort}
-                        onChangeSort={handleSortChange}
-                        size={size}
-                        onChangeSize={handleSizeChange}
-                    />
-                </div>
-
-                <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onChangePage={(page) => fetchUsers(page, size, search, sort)}
-                />
-
-                <div className="section">
-                    <UserDetailForm
-                        detail={detail}
-                        onChangeDetail={handleDetailChange}
-                        handleAdd={handleAdd}
-                        handleSave={handleSave}
-                        handleDelete={handleDelete}
-                        teamOptions={teamOptions}
-                        positionOptions={positionOptions}
-                        roleOptions={roleOptions}
-                        selectedRoleIds={selectedRoleIds}
-                        handleRoleCheck={handleRoleCheck}
-                        emailDomainType={emailDomainType}
-                        emailDomainOptions={EMAIL_DOMAIN_OPTIONS}
-                        onChangeEmailId={handleEmailIdChange}
-                        onChangeEmailDomain={handleEmailDomainChange}
-                        onChangeEmailDomainType={handleEmailDomainTypeChange}
-                        disabled={isDetailDisabled}
-                    />
-                </div>
-
-                <Toast
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={clearToast}
-                />
-
-                <ConfirmModal
-                    open={confirm.open}
-                    message={confirm.message}
-                    onCancel={closeConfirm}
-                    onConfirm={handleConfirm}
+        <div className="page">
+            <div className="section">
+                <UserSearch
+                    search={search}
+                    onChangeSearch={handleSearchChange}
+                    handleSearch={handleSearch}
+                    handleReset={handleReset}
+                    loading={loading}
+                    teamOptions={teamOptions}
+                    positionOptions={positionOptions}
                 />
             </div>
-        </AppLayout>
+
+            <div className="section">
+                <UserTable
+                    users={users}
+                    checkedIds={checkedIds}
+                    selectedId={selectedId}
+                    handleCheck={handleCheck}
+                    handleCheckAll={handleCheckAll}
+                    handleSelect={handleSelectRow}
+                    sort={sort}
+                    onChangeSort={handleSortChange}
+                    size={size}
+                    onChangeSize={handleSizeChange}
+                />
+            </div>
+
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onChangePage={(page) => fetchUsers(page, size, search, sort)}
+            />
+
+            <div className="section">
+                <UserDetailForm
+                    detail={detail}
+                    onChangeDetail={handleDetailChange}
+                    handleAdd={handleAdd}
+                    handleSave={handleSave}
+                    handleDelete={handleDelete}
+                    teamOptions={teamOptions}
+                    positionOptions={positionOptions}
+                    roleOptions={roleOptions}
+                    selectedRoleIds={selectedRoleIds}
+                    handleRoleCheck={handleRoleCheck}
+                    emailDomainType={emailDomainType}
+                    emailDomainOptions={EMAIL_DOMAIN_OPTIONS}
+                    onChangeEmailId={handleEmailIdChange}
+                    onChangeEmailDomain={handleEmailDomainChange}
+                    onChangeEmailDomainType={handleEmailDomainTypeChange}
+                    disabled={isDetailDisabled}
+                />
+            </div>
+
+            <Toast
+                message={toast.message}
+                type={toast.type}
+                onClose={clearToast}
+            />
+
+            <ConfirmModal
+                open={confirm.open}
+                message={confirm.message}
+                onCancel={closeConfirm}
+                onConfirm={handleConfirm}
+            />
+        </div>
     );
 };
 
