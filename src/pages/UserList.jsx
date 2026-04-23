@@ -650,7 +650,7 @@ const UserList = () => {
             <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onChangePage={(page) => fetchUsers(page, size, search, sort)}
+                onChangePage={setCurrentPage}
             />
 
             <div className="section">

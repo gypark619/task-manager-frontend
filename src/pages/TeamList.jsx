@@ -440,7 +440,7 @@ const TeamList = () => {
             <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onChangePage={(page) => fetchTeams(page, size, search, sort)}
+                onChangePage={setCurrentPage}
             />
 
             <div className="section">

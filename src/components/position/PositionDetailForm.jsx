@@ -1,4 +1,4 @@
-const UserDetailForm = ({
+const PositionDetailForm = ({
     detail,
     onChangeDetail,
     handleAdd,
@@ -91,4 +91,4 @@ const UserDetailForm = ({
     );
 };
 
-export default UserDetailForm;
+export default PositionDetailForm;

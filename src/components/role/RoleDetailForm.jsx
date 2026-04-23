@@ -1,4 +1,4 @@
-const UserDetailForm = ({
+const RoleDetailForm = ({
     detail,
     onChangeDetail,
     handleAdd,
@@ -77,4 +77,4 @@ const UserDetailForm = ({
     );
 };
 
-export default UserDetailForm;
+export default RoleDetailForm;

@@ -1,4 +1,4 @@
-const UserSearch = ({
+const RoleSearch = ({
     search,
     onChangeSearch,
     handleSearch,
@@ -52,4 +52,4 @@ const UserSearch = ({
     );
 };
 
-export default UserSearch;
+export default RoleSearch;

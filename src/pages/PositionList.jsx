@@ -395,7 +395,7 @@ const PositionList = () => {
             <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onChangePage={(page) => fetchPositions(page, size, search, sort)}
+                onChangePage={setCurrentPage}
             />
 
             <div className="section">

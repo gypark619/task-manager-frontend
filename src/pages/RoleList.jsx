@@ -386,7 +386,7 @@ const RoleList = () => {
             <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onChangePage={(page) => fetchRoles(page, size, search, sort)}
+                onChangePage={setCurrentPage}
             />
 
             <div className="section">
