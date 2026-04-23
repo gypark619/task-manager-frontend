@@ -266,7 +266,7 @@ const PositionList = () => {
         } else if (selectedId) {
             targetIds = [selectedId];
         } else {
-            showError("삭제할 사용자를 선택하세요.");
+            showError("삭제할 직급을 선택하세요.");
             return;
         }
 

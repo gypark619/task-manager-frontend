@@ -300,7 +300,7 @@ const TeamList = () => {
         } else if (selectedId) {
             targetIds = [selectedId]
         } else {
-            showError("삭제할 사용자를 선택하세요.");
+            showError("삭제할 부서를 선택하세요.");
             return;
         }
 
