@@ -15,6 +15,12 @@ export const EMAIL_DOMAIN_OPTIONS = [
     { value: "kakao.com", label: "kakao.com" }
 ];
 
+export const PRIORITY_OPTIONS = [
+  { value: 1, label: "높음" },
+  { value: 2, label: "보통" },
+  { value: 3, label: "낮음" }
+];
+
 // ====================
 // 전체/선택 값 추가
 // ====================

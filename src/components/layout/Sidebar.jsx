@@ -3,6 +3,7 @@ import UserList from "../../pages/UserList";
 import TeamList from "../../pages/TeamList";
 import PositionList from "../../pages/PositionList";
 import RoleList from "../../pages/RoleList";
+import TaskList from "../../pages/TaskList";
 
 function Sidebar({ onMenuClick, activeKey, isCollapsed, onToggle }) {
     if (isCollapsed) {
@@ -57,6 +58,13 @@ function Sidebar({ onMenuClick, activeKey, isCollapsed, onToggle }) {
                     onClick={() => onMenuClick("roles", "권한 관리", <RoleList />)}
                 >
                     <span className="sidebar-item-label">권한 관리</span>
+                </div>
+
+                <div
+                    className={`sidebar-item ${activeKey === "tasks" ? "active" : ""}`}
+                    onClick={() => onMenuClick("tasks", "업무 관리", <TaskList />)}
+                >
+                    <span className="sidebar-item-label">업무 관리</span>
                 </div>
             </div>
         </aside>
