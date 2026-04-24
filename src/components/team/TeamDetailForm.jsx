@@ -1,3 +1,5 @@
+import UserSelectField from "../../components/common/UserSelectField";
+
 const TeamDetailForm = ({
     detail,
     onChangeDetail,
@@ -65,39 +67,14 @@ const TeamDetailForm = ({
 
                 <div className="detail-field detail-col-2">
                     <label className="form-label">부서장</label>
-                    <input
-                        className="form-input"
-                        value={detail.teamLeaderEmployeeNo || ""}
+                    <UserSelectField
+                        employeeNo={detail.teamLeaderEmployeeNo}
+                        userName={detail.teamLeaderName}
                         disabled={disabled}
-                        onChange={(e) => onChangeDetail("teamLeaderEmployeeNo", e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                handleSearchLeader();
-                            }
-                        }}
-                        placeholder="사번"
+                        onChangeEmployeeNo={(value) => onChangeDetail("teamLeaderEmployeeNo", value)}
+                        onChangeUserName={(value) => onChangeDetail("teamLeaderName", value)}
+                        onSearch={handleSearchLeader}
                     />
-
-                    <input
-                        className="form-input"
-                        value={detail.teamLeaderName || ""}
-                        disabled={disabled}
-                        onChange={(e) => onChangeDetail("teamLeaderName", e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                handleSearchLeader();
-                            }
-                        }}
-                        placeholder="이름"
-                    />
-                    <button 
-                        className="button"
-                        type="button"
-                        disabled={disabled}
-                        onClick={handleSearchLeader}
-                    >
-                        선택
-                    </button>
                 </div>
 
                 <div className="detail-field detail-col-1">

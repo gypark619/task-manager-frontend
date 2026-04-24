@@ -1,0 +1,29 @@
+.task-list-page {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.task-list-page .data-table-row.selected {
+    background-color: transparent;
+}
+
+.task-list-page .section-header {
+    justify-content: space-between;
+}
+
+.task-list-page .section-header .search-item {
+    margin-left: auto;
+}
+
+.task-list-page .table-container {
+    min-height: 0;
+}
+
+.task-list-page .task-table-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.task-list-page .data-table-row.selected:hover {
+    background-color: #f9f9f9;
+}

@@ -235,3 +235,25 @@
 .button-delete:hover {
     background-color: #fdeaea;
 }
+
+/* ===== 사용자 input ===== */
+.user-select-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.user-select-field .user-id-input {
+    width: 110px;
+    flex: 0 0 110px;
+}
+
+.user-select-field .user-name-input {
+    width: 140px;
+    flex: 0 0 140px;
+}
+
+.user-select-field .button {
+    flex: 0 0 auto;
+}

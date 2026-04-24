@@ -14,6 +14,7 @@ import UserSelectModal from "../components/common/UserSelectModal";
 // API
 import { getTasks, deleteTask } from "../api/taskApi";
 import { getTeams } from "../api/teamApi";
+import { getTaskStatuses } from "../api/taskStatusApi";
 
 // hooks
 import useToast from "../hooks/useToast";
@@ -24,6 +25,7 @@ import useUserSelectModal from "../hooks/useUserSelectModal";
 import "../styles/layout.css";
 import "../styles/form.css";
 import "../styles/table.css";
+import "../styles/task.css";
 
 
 const TaskList = () => {
@@ -31,6 +33,7 @@ const TaskList = () => {
     const [tasks, setTasks] = useState([]);
 
     const [teams, setTeams] = useState([]);
+    const [taskStatuses, setTaskStatuses] = useState([]);
     
     const [search, setSearch] = useState({
         title: "",
@@ -47,7 +50,7 @@ const TaskList = () => {
         direction: "desc"
     });
     
-    const DEFAULT_SIZE = 10;
+    const DEFAULT_SIZE = 15;
     const [size, setSize] = useState(DEFAULT_SIZE);
     
     const [loading, setLoading] = useState(false);
@@ -176,7 +179,6 @@ const TaskList = () => {
             .then(() => {
                 showSuccess("삭제 완료");
                 setCheckedIds([]);
-                setSelectedId(null);
                 fetchTasks(currentPage, size, search, sort);
             })
             .catch((err) => {
@@ -190,8 +192,6 @@ const TaskList = () => {
 
         if (checkedIds.length > 0) {
             targetIds = [...checkedIds];
-        } else if (selectedId) {
-            targetIds = [selectedId]
         } else {
             showError("삭제할 업무를 선택하세요.");
             return;
@@ -232,12 +232,6 @@ const TaskList = () => {
                 setTasks(content);
                 setCurrentPage(res.data.page);
                 setTotalPages(res.data.totalPages);
-
-                if (content.length > 0) {
-                    setSelectedId(content[0].taskId);
-                } else {
-                    setSelectedId(null);
-                }
             })
             .catch((err) => {
                 console.error(err);
@@ -265,6 +259,17 @@ const TaskList = () => {
             });
     };
 
+    const fetchTaskStatusOptions = () => {
+        return getTaskStatuses()
+            .then((res) => {
+                setTaskStatuses(res.data);
+            })
+            .catch((err) => {
+                console.error(err);
+                showError(err, "상태 목록 조회 실패");
+            });
+    };
+
 
     // ===== useEffect =====
     useEffect(() => {
@@ -273,6 +278,7 @@ const TaskList = () => {
 
     useEffect(() => {
         fetchTeamOptions();
+        fetchTaskStatusOptions();
     }, []);
 
     const teamOptions = teams.map((team) => ({
@@ -280,8 +286,13 @@ const TaskList = () => {
         label: team.teamName
     }));
 
+    const taskStatusOptions = taskStatuses.map((taskStatus) => ({
+        value: String(taskStatus.statusId),
+        label: taskStatus.statusName
+    }));
+
     return (
-        <div className="page">
+        <div className="page task-list-page">
             <div className="section">
                 <TaskSearch
                     search={search}
@@ -290,6 +301,7 @@ const TaskList = () => {
                     handleReset={handleReset}
                     loading={loading}
                     teamOptions={teamOptions}
+                    taskStatusOptions={taskStatusOptions}
                     handleSearchAssignee={handleSearchAssignee}
                 />
             </div>

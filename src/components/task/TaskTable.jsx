@@ -29,50 +29,52 @@ const TaskTable = ({
             <div className="section-header">
                 <h3 className="section-title">업무 목록</h3>
 
-                <div className="search-item">
-                    <select
-                        title="정렬"
-                        className="form-select"
-                        value={`${sort.field},${sort.direction}`}
-                        onChange={(e) => {
-                            const [field, direction] = e.target.value.split(",");
-                            onChangeSort(field, direction);
-                        }}
-                    >
-                        <option value="taskId,desc">최신순</option>
-                        <option value="title,asc">업무명 오름차순</option>
-                        <option value="title,desc">업무명 내림차순</option>
-                    </select>
-                    <select
-                        title="건수"
-                        className="form-select"
-                        value={size}
-                        onChange={(e) => {
-                            const newSize = Number(e.target.value);
-                            onChangeSize(newSize);
-                        }}
-                    >
-                        <option value="10">10건</option>
-                        <option value="20">20건</option>
-                        <option value="50">50건</option>
-                    </select>
-                </div>
-                <div className="detail-button-group">
-                    <button
-                        className="button"
-                        type="button"
-                        onClick={handleNew}
-                    >
-                        신규
-                    </button>
-                    <button
-                        className="button button-delete"
-                        type="button"
-                        disabled={disabled}
-                        onClick={handleDelete}
-                    >
-                        삭제
-                    </button>
+                <div className="task-table-actions">
+                    <div className="search-item">
+                        <select
+                            title="정렬"
+                            className="form-select"
+                            value={`${sort.field},${sort.direction}`}
+                            onChange={(e) => {
+                                const [field, direction] = e.target.value.split(",");
+                                onChangeSort(field, direction);
+                            }}
+                        >
+                            <option value="taskId,desc">최신순</option>
+                            <option value="title,asc">업무명 오름차순</option>
+                            <option value="title,desc">업무명 내림차순</option>
+                        </select>
+                        <select
+                            title="건수"
+                            className="form-select"
+                            value={size}
+                            onChange={(e) => {
+                                const newSize = Number(e.target.value);
+                                onChangeSize(newSize);
+                            }}
+                        >
+                            <option value="15">15건</option>
+                            <option value="30">30건</option>
+                            <option value="60">60건</option>
+                        </select>
+                    </div>
+                    <div className="detail-button-group">
+                        <button
+                            className="button"
+                            type="button"
+                            onClick={handleNew}
+                        >
+                            신규
+                        </button>
+                        <button
+                            className="button button-delete"
+                            type="button"
+                            disabled={disabled}
+                            onClick={handleDelete}
+                        >
+                            삭제
+                        </button>
+                    </div>
                 </div>
             </div>
             

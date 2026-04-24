@@ -1,6 +1,5 @@
-import {
-    withEmptyOption
-} from "../../constants/optionUtils";
+import UserSelectField from "../../components/common/UserSelectField";
+import { withEmptyOption } from "../../constants/optionUtils";
 
 const TaskSearch = ({
     search,
@@ -9,6 +8,7 @@ const TaskSearch = ({
     handleReset,
     loading,
     teamOptions = [],
+    taskStatusOptions = [],
     handleSearchAssignee
 }) => {
     // Enter로 조회
@@ -39,6 +39,11 @@ const TaskSearch = ({
                             value={search.statusId}
                             onChange={(e) => onChangeSearch("statusId", e.target.value)}
                         >
+                            {withEmptyOption(taskStatusOptions, "전체").map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
                         </select>
                     </div>
                     <div className="search-item">
@@ -57,38 +62,13 @@ const TaskSearch = ({
                     </div>
                     <div className="search-item">
                         <label className="form-label">담당자</label>
-                        <input
-                            className="form-input"
-                            type="text"
-                            value={search.assigneeId}
-                            onChange={(e) => onChangeSearch("assigneeId", e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    handleSearchAssignee();
-                                }
-                            }}
-                            placeholder="사번"
+                        <UserSelectField
+                            employeeNo={search.assigneeId}
+                            userName={search.assigneeName}
+                            onChangeEmployeeNo={(value) => onChangeSearch("assigneeId", value)}
+                            onChangeUserName={(value) => onChangeSearch("assigneeName", value)}
+                            onSearch={handleSearchAssignee}
                         />
-
-                        <input
-                            className="form-input"
-                            type="text"
-                            value={search.assigneeName}
-                            onChange={(e) => onChangeSearch("assigneeId", e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    handleSearchAssignee();
-                                }
-                            }}
-                            placeholder="이름"
-                        />
-                        <button 
-                            className="button"
-                            type="button"
-                            onClick={handleSearchAssignee}
-                        >
-                            선택
-                        </button>
                     </div>
                     <div className="search-item">
                         <label className="form-label">기간</label>
