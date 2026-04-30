@@ -19,6 +19,15 @@
     color: #111827;
 }
 
+.form-textarea {
+    width: 100%;
+    min-height: 180px;
+    padding: 8px;
+    box-sizing: border-box;
+    resize: vertical;
+    resize: none;
+}
+
 /* ===== 체크박스 ===== */
 .checkbox-group {
     display: flex;
@@ -256,4 +265,20 @@
 
 .user-select-field .button {
     flex: 0 0 auto;
+}
+
+.file-section {
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 16px 0;
+}
+
+.file-section-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.file-section-row + .file-section-row {
+    margin-top: 12px;
 }

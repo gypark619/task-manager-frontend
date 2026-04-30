@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 // 페이지 전용 컴포넌트
 import TaskSearch from "../components/task/TaskSearch";
 import TaskTable from "../components/task/TaskTable";
+import TaskDetail from "./TaskDetail";
 
 // 공통 UI
 import Toast from "../components/common/Toast";
@@ -28,7 +29,7 @@ import "../styles/table.css";
 import "../styles/task.css";
 
 
-const TaskList = () => {
+const TaskList = ({ openTab }) => {
     // ===== State =====
     const [tasks, setTasks] = useState([]);
 
@@ -166,12 +167,21 @@ const TaskList = () => {
     };
 
     const handleSelectRow = (task) => {
-        setSelectedId(task.taskId);
+        openTab(
+            "task-detail",
+            "업무 상세",
+            <TaskDetail taskId={task.taskId} openTab={openTab} />
+        );
     };
 
     const handleNew = () => {
         setCheckedIds([]);
-        showInfo("신규 기능 준비 중입니다.");
+
+        openTab(
+            "task-detail",
+            "업무 등록",
+            <TaskDetail taskId={null} openTab={openTab} />
+        );
     };
 
     const confirmDelete = (targetIds) => {

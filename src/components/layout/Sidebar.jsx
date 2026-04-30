@@ -62,7 +62,13 @@ function Sidebar({ onMenuClick, activeKey, isCollapsed, onToggle }) {
 
                 <div
                     className={`sidebar-item ${activeKey === "tasks" ? "active" : ""}`}
-                    onClick={() => onMenuClick("tasks", "업무 관리", <TaskList />)}
+                    onClick={() =>
+                        onMenuClick(
+                            "tasks",
+                            "업무 관리",
+                            <TaskList openTab={onMenuClick} />
+                        )
+                    }
                 >
                     <span className="sidebar-item-label">업무 관리</span>
                 </div>

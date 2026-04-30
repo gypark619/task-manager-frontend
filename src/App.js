@@ -14,7 +14,19 @@ function App() {
     const openTab = (key, label, component) => {
         setTabs((prev) => {
             const exists = prev.find((t) => t.key === key);
-            if (exists) return prev;
+
+            if (exists) {
+                if (component === undefined) {
+                    return prev;
+                }
+
+                return prev.map((tab) =>
+                    tab.key === key
+                        ? { ...tab, label, component }
+                        : tab
+                );
+            }
+
             return [...prev, { key, label, component }];
         });
 
